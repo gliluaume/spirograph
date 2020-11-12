@@ -1,0 +1,11 @@
+canvas {
+  border: 1px solid;
+  cursor: crosshair;
+}
+form {
+  display: grid;
+}
+.inline {
+  display: inline-block;
+  vertical-align: top;
+}
