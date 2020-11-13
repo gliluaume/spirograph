@@ -1,0 +1,27 @@
+{
+  "name": "spirograph",
+  "version": "1.0.0",
+  "description": "Spirograph",
+  "main": "app.js",
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gliluaume/spirograph.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gliluaume/spirograph/issues"
+  },
+  "homepage": "https://github.com/gliluaume/spirograph#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.7.0",
+    "@typescript-eslint/parser": "^4.7.0",
+    "eslint": "^7.13.0",
+    "typescript": "^4.0.5"
+  }
+}
