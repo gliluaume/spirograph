@@ -20,14 +20,15 @@ export class Spirograph {
         this.setCanvasContext('canvas')
         this.window = window
 
-        this.currentAngle = 0;
-        this.currentAngleStep = 0; // cumul de valeur d'angle sans le modulo 2Pi
-        this.points = [];
-        this.pointing = null; // if mouse down
-        this.inking = false;
-        this.step = 0;
-        this.lastSeq = 0;
-        this.o = null;
+        this.currentAngle = 0
+        this.currentAngleStep = 0 // cumul de valeur d'angle sans le modulo 2Pi
+        this.points = []
+        this.pointing = null // if mouse down
+        this.inking = false
+        this.step = 0
+        this.lastSeq = 0
+        this.o = null
+        this.prms = new Parameters()
     }
 
     public setCanvasContext(eltId: string) {
@@ -74,37 +75,38 @@ export class Spirograph {
             this.addPoint(this.currentPointPosition(this.prms.penPosition, this.o, this.currentAngle));
         }
 
-        // // draw points
+        // draw points
         this.points.forEach((point) => this.drawPoint(point));
 
         this.ctx.restore();
         this.step++;
         // setTimeout(() => window.requestAnimationFrame(draw), 10)
-        this.window.requestAnimationFrame(this.draw)
+        this.window.requestAnimationFrame(this.draw.bind(this))
     }
 
-    clear() {
+    private clear() {
         this.points = [];
     }
 
-    deleteLastSeq() {
+    private deleteLastSeq() {
         this.points = this.points.filter(p => p.seq < this.lastSeq);
         this.lastSeq = this.getLastSeq();
     }
-    getLastSeq() {
+
+    private getLastSeq() {
         return this.points.length
             ? Math.max.apply(null, this.points.map(point => point.seq))
             : 0;
     }
 
     // position du stylo
-    currentPointPosition(pointInitialPosition: IPoint, innerCircleCenter: IPoint, alpha: number) {
+    private currentPointPosition(pointInitialPosition: IPoint, innerCircleCenter: IPoint, alpha: number) {
         return translatePoint(
             rotatePoint(pointInitialPosition, -alpha),
             innerCircleCenter);
     }
 
-    drawInnerCircle(point: IPoint, alpha: number) {
+    private drawInnerCircle(point: IPoint, alpha: number) {
         this.ctx.strokeStyle = this.prms.dimensions.innerCircleColor;
 
         // a mark
@@ -125,11 +127,11 @@ export class Spirograph {
         this.ctx.stroke();
     }
 
-    start() { this.inking = true; }
-    stop() { this.inking = false; }
-    stopCircle() { this.prms.angularSpeed = 0; }
+    private start() { this.inking = true; }
+    private stop() { this.inking = false; }
+    private stopCircle() { this.prms.angularSpeed = 0; }
 
-    drawPoint(point: Dot) {
+    private drawPoint(point: Dot) {
         this.ctx.beginPath();
         this.ctx.lineWidth = point.lineWidth;
         this.ctx.strokeStyle = point.color;
@@ -140,27 +142,43 @@ export class Spirograph {
     }
 
     /** positionne le point sur le cercle interne */
-    setPen(event: any) {
+    private setPen(event: any) {
         var p = this.correctPosition({ x: event.layerX, y: event.layerY });
         console.log('clic', event, p, this.o)
         if (this.isInInnerCircle(p)) {
             console.log('dans le cercle')
         }
     }
-    isInInnerCircle(p) {
+    private isInInnerCircle(p) {
         var translated = translatePoint(p, oppPoint(this.o));
         console.log('translated', translated, 'of', p);
         return (Math.pow(translated.x, 2) + Math.pow(translated.y, 2) < Math.pow(this.prms.dimensions.innerCircleRadius, 2));
     }
 
-    addPoint(p: IPoint) {
+    private addPoint(p: IPoint) {
         this.points.push(Object.assign({}, this.prms.point, p, { seq: this.lastSeq }));
     }
 
-    correctPosition(p: IPoint): IPoint {
+    private correctPosition(p: IPoint): IPoint {
         return rotatePoint({
             x: p.x * 1 / this.prms.dimensions.scaleFactor - this.prms.dimensions.squareSize / 2 * 1 / this.prms.dimensions.scaleFactor,
             y: p.y * 1 / this.prms.dimensions.scaleFactor - this.prms.dimensions.squareSize / 2 * 1 / this.prms.dimensions.scaleFactor,
         }, this.currentAngle);
+    }
+
+    public link() {
+        var canvasElt = document.getElementById('canvas');
+        canvasElt.setAttribute('width', this.prms.dimensions.squareSize.toString());
+        canvasElt.setAttribute('height', this.prms.dimensions.squareSize.toString());
+        canvasElt.addEventListener('click', this.setPen, false);
+
+        // on fait une interface avec l'extérieur
+        this.window.requestAnimationFrame(this.draw.bind(this));
+        this.window.pottingWheelPrms = this.prms;
+        this.window.pottingWheelPrms.start = this.start.bind(this);
+        this.window.pottingWheelPrms.stop = this.stop.bind(this);
+        this.window.pottingWheelPrms.stopCircle = this.stopCircle.bind(this);
+        this.window.pottingWheelPrms.clear = this.clear.bind(this);
+        this.window.pottingWheelPrms.undo = this.deleteLastSeq.bind(this);
     }
 }
