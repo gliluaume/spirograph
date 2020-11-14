@@ -1,4 +1,4 @@
-import { IPoint, isInCircle, rotatePoint, translatePoint } from "./geometry"
+import { IPoint, isInCircle, oppPoint, rotatePoint, translatePoint } from "./geometry"
 import { Dot, Parameters } from "./Parameters"
 
 export class Spirograph {
@@ -13,6 +13,7 @@ export class Spirograph {
     private step: number
     private lastSeq: number
     private o: IPoint
+    private O: IPoint
 
     public prms: Parameters
 
@@ -29,6 +30,10 @@ export class Spirograph {
         this.lastSeq = 0
         this.o = null
         this.prms = new Parameters()
+        this.O = {
+            x: this.prms.dimensions.squareSize / 2,
+            y: this.prms.dimensions.squareSize / 2,
+        }
     }
 
     public setCanvasContext(eltId: string) {
@@ -40,12 +45,21 @@ export class Spirograph {
         this.currentAngle = (this.currentAngle + this.prms.angularSpeed) % (2 * Math.PI);
         this.ctx.save();
         this.ctx.clearRect(0, 0, this.prms.dimensions.squareSize, this.prms.dimensions.squareSize);
-        this.ctx.translate(this.prms.dimensions.squareSize / 2, this.prms.dimensions.squareSize / 2);
+        // this.ctx.translate(this.prms.dimensions.squareSize / 2, this.prms.dimensions.squareSize / 2);
+        this.ctx.translate(this.O.x, this.O.y);
         this.ctx.scale(this.prms.dimensions.scaleFactor, this.prms.dimensions.scaleFactor);
-        this.ctx.strokeStyle = this.prms.dimensions.circleColor;
-        this.ctx.lineWidth = this.prms.dimensions.lineWidth;
+
+        // Debug: draw axis
+        this.ctx.beginPath();
+        this.ctx.moveTo(-300, 0);
+        this.ctx.lineTo(300, 0);
+        this.ctx.moveTo(0, -300);
+        this.ctx.lineTo(0, 300);
+        this.ctx.stroke();
 
         // draw external circle
+        this.ctx.strokeStyle = this.prms.dimensions.circleColor;
+        this.ctx.lineWidth = this.prms.dimensions.lineWidth;
         const outterCircleRadius = this.prms.dimensions.outterCircleRadius;
         this.ctx.beginPath();
         this.ctx.strokeStyle = this.prms.dimensions.circleColor;
@@ -138,7 +152,8 @@ export class Spirograph {
     /** positionne le point sur le cercle interne */
     private setPen(event: any) {
         const p = this.correctPosition({ x: event.layerX, y: event.layerY });
-        console.log('clic', event, p, this.o)
+        // console.log('clic', event, p, this.o)
+        // console.log('clic', p, { x: event.layerX, y: event.layerY })
         if (this.isInInnerCircle(p)) {
             console.log('dans le cercle')
         }
@@ -146,9 +161,6 @@ export class Spirograph {
 
     private isInInnerCircle(p: IPoint) {
         return isInCircle(p, { center: this.o, radius: this.prms.dimensions.innerCircleRadius})
-        // var translated = translatePoint(p, oppPoint(this.o));
-        // console.log('translated', translated, 'of', p);
-        // return (Math.pow(translated.x, 2) + Math.pow(translated.y, 2) < Math.pow(this.prms.dimensions.innerCircleRadius, 2));
     }
 
     private addPoint(p: IPoint) {
@@ -156,10 +168,7 @@ export class Spirograph {
     }
 
     private correctPosition(p: IPoint): IPoint {
-        return rotatePoint({
-            x: p.x * 1 / this.prms.dimensions.scaleFactor - this.prms.dimensions.squareSize / 2 * 1 / this.prms.dimensions.scaleFactor,
-            y: p.y * 1 / this.prms.dimensions.scaleFactor - this.prms.dimensions.squareSize / 2 * 1 / this.prms.dimensions.scaleFactor,
-        }, this.currentAngle);
+        return translatePoint(p, oppPoint(this.O))
     }
 
     public link() {
