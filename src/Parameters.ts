@@ -39,7 +39,7 @@ export class Dimensions {
     public squareSize: number
     public scaleFactor: number
     public lineWidth: number
-    public circleFactor: number
+    public outterCircleRadius: number
     public circleColor: string
     public innerCircleColor: string
     public innerCircleRadius: number
@@ -48,7 +48,7 @@ export class Dimensions {
         this.squareSize = 600
         this.scaleFactor = 1
         this.lineWidth = 3
-        this.circleFactor = 0.4
+        this.outterCircleRadius = 240
         this.circleColor = '#325FA2'
         this.innerCircleColor = '#995FA2'
         this.innerCircleRadius = 50

@@ -46,23 +46,17 @@ export class Spirograph {
         this.ctx.lineWidth = this.prms.dimensions.lineWidth;
 
         // draw external circle
-        var externalCircleRadius = this.prms.dimensions.squareSize * this.prms.dimensions.circleFactor;
-        // a mark
-        this.ctx.beginPath();
-        this.ctx.moveTo(this.prms.dimensions.squareSize * this.prms.dimensions.circleFactor + 15, 0);
-        this.ctx.lineTo(this.prms.dimensions.squareSize * this.prms.dimensions.circleFactor, 0);
-        this.ctx.stroke();
-
+        const outterCircleRadius = this.prms.dimensions.outterCircleRadius;
         this.ctx.beginPath();
         this.ctx.strokeStyle = this.prms.dimensions.circleColor;
-        this.ctx.arc(0, 0, externalCircleRadius, 0, Math.PI * 2, true);
+        this.ctx.arc(0, 0, outterCircleRadius, 0, Math.PI * 2, true);
         this.ctx.stroke();
 
         // inner Circle
         // initial (x, y) = o, center of c
-        var initialcX = this.prms.dimensions.innerCircleRadius - externalCircleRadius + this.prms.dimensions.lineWidth;
-        var initialcY = 0;
-        var beta = this.currentAngleStep * this.prms.dimensions.innerCircleRadius / externalCircleRadius;
+        const initialcX = this.prms.dimensions.innerCircleRadius - outterCircleRadius + this.prms.dimensions.lineWidth;
+        const initialcY = 0;
+        const beta = this.currentAngleStep * this.prms.dimensions.innerCircleRadius / outterCircleRadius;
         // console.log((new Date()).getTime(), points.length)
 
         this.o = rotatePoint({ x: initialcX, y: initialcY }, beta);
@@ -110,10 +104,10 @@ export class Spirograph {
         this.ctx.strokeStyle = this.prms.dimensions.innerCircleColor;
 
         // a mark
-        var markStart = translatePoint(
+        const markStart = translatePoint(
             rotatePoint({ x: 0, y: -this.prms.dimensions.innerCircleRadius }, -alpha),
             point);
-        var markEnd = translatePoint(
+        const markEnd = translatePoint(
             rotatePoint({ x: 0, y: -this.prms.dimensions.innerCircleRadius + 10 }, -alpha),
             point);
 
@@ -143,12 +137,13 @@ export class Spirograph {
 
     /** positionne le point sur le cercle interne */
     private setPen(event: any) {
-        var p = this.correctPosition({ x: event.layerX, y: event.layerY });
+        const p = this.correctPosition({ x: event.layerX, y: event.layerY });
         console.log('clic', event, p, this.o)
         if (this.isInInnerCircle(p)) {
             console.log('dans le cercle')
         }
     }
+
     private isInInnerCircle(p: IPoint) {
         return isInCircle(p, { center: this.o, radius: this.prms.dimensions.innerCircleRadius})
         // var translated = translatePoint(p, oppPoint(this.o));
@@ -168,7 +163,7 @@ export class Spirograph {
     }
 
     public link() {
-        var canvasElt = document.getElementById('canvas');
+        const canvasElt = document.getElementById('canvas');
         canvasElt.setAttribute('width', this.prms.dimensions.squareSize.toString());
         canvasElt.setAttribute('height', this.prms.dimensions.squareSize.toString());
         canvasElt.addEventListener('click', this.setPen.bind(this), false);
