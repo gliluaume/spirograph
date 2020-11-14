@@ -3,6 +3,11 @@ export interface IPoint {
     y: number
 }
 
+export interface ICircle {
+    center: IPoint
+    radius: number
+}
+
 export const rotatePoint = (p: IPoint, alpha: number) => ({
     x: p.x * Math.cos(alpha) - p.y * Math.sin(alpha),
     y: p.x * Math.sin(alpha) + p.y * Math.cos(alpha)
@@ -17,3 +22,9 @@ export const translatePoint = (p: IPoint, q: IPoint) => ({
     x: p.x + q.x,
     y: p.y + q.y,
 })
+
+export const isInCircle = (p: IPoint, c: ICircle) => {
+    var translated = translatePoint(p, oppPoint(c.center));
+    console.log('translated', translated, 'of', p);
+    return (Math.pow(translated.x, 2) + Math.pow(translated.y, 2) < Math.pow(c.radius, 2));
+}

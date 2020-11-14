@@ -1,4 +1,4 @@
-import { IPoint, oppPoint, rotatePoint, translatePoint } from "./geometry"
+import { IPoint, isInCircle, rotatePoint, translatePoint } from "./geometry"
 import { Dot, Parameters } from "./Parameters"
 
 export class Spirograph {
@@ -149,10 +149,11 @@ export class Spirograph {
             console.log('dans le cercle')
         }
     }
-    private isInInnerCircle(p) {
-        var translated = translatePoint(p, oppPoint(this.o));
-        console.log('translated', translated, 'of', p);
-        return (Math.pow(translated.x, 2) + Math.pow(translated.y, 2) < Math.pow(this.prms.dimensions.innerCircleRadius, 2));
+    private isInInnerCircle(p: IPoint) {
+        return isInCircle(p, { center: this.o, radius: this.prms.dimensions.innerCircleRadius})
+        // var translated = translatePoint(p, oppPoint(this.o));
+        // console.log('translated', translated, 'of', p);
+        // return (Math.pow(translated.x, 2) + Math.pow(translated.y, 2) < Math.pow(this.prms.dimensions.innerCircleRadius, 2));
     }
 
     private addPoint(p: IPoint) {
@@ -170,7 +171,7 @@ export class Spirograph {
         var canvasElt = document.getElementById('canvas');
         canvasElt.setAttribute('width', this.prms.dimensions.squareSize.toString());
         canvasElt.setAttribute('height', this.prms.dimensions.squareSize.toString());
-        canvasElt.addEventListener('click', this.setPen, false);
+        canvasElt.addEventListener('click', this.setPen.bind(this), false);
 
         // on fait une interface avec l'extérieur
         this.window.requestAnimationFrame(this.draw.bind(this));
