@@ -3,6 +3,7 @@ import { IPoint } from './geometry'
 export class Parameters {
     public angularSpeed: number
     public frequency: number
+    // Position du stylo relativement au cercle interne
     public penPosition: IPoint
     public point: Dot // TODO renommer en 'dot'
     public dimensions: Dimensions
@@ -25,13 +26,18 @@ export class Dot implements IPoint {
     public xOffset: number
     public yOffset: number
 
-    constructor() {
+    constructor(p:IPoint = null) {
         this.color = '#ff0000'
         this.lineWidth = 1
         this.radius = 1
         this.seq = 0
         this.xOffset = 0
         this.yOffset = 0
+
+        if (p) {
+            this.x = p.x
+            this.y = p.y
+        }
     }
 }
 

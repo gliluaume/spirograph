@@ -1,12 +1,20 @@
-import { IPoint, isInCircle, oppPoint, rotatePoint, translatePoint } from "./geometry"
+import { IPoint, isInCircle, oppPoint, rotatePoint, translatePoint, o } from "./geometry"
 import { Dot, Parameters } from "./Parameters"
+
 
 export class Spirograph {
     private ctx: any
     private window: any
 
+    // currentAngle (=alpha) est l'angle de rotation du cercle interne
+    // quand le cercle interne tourne de alpha, on considère qu'il roule sur le bord intérieur
+    // du cercle externe, son centre subit une rotation de centre le centre du cercle externe (O)
+    // et d'un angle                    r
+    //                  beta = alpha * ---
+    //                                  R
     private currentAngle: number
     private currentAngleStep: number
+    private beta: number
     private points: Dot[]
     private pointing: boolean
     private inking: boolean
@@ -50,6 +58,7 @@ export class Spirograph {
         this.ctx.scale(this.prms.dimensions.scaleFactor, this.prms.dimensions.scaleFactor);
 
         // Debug: draw axis
+        this.ctx.lineWidth = 1
         this.ctx.beginPath();
         this.ctx.moveTo(-300, 0);
         this.ctx.lineTo(300, 0);
@@ -70,17 +79,17 @@ export class Spirograph {
         // initial (x, y) = o, center of c
         const initialcX = this.prms.dimensions.innerCircleRadius - outterCircleRadius + this.prms.dimensions.lineWidth;
         const initialcY = 0;
-        const beta = this.currentAngleStep * this.prms.dimensions.innerCircleRadius / outterCircleRadius;
+        this.beta = this.currentAngleStep * this.prms.dimensions.innerCircleRadius / outterCircleRadius;
         // console.log((new Date()).getTime(), points.length)
 
-        this.o = rotatePoint({ x: initialcX, y: initialcY }, beta);
+        this.o = rotatePoint({ x: initialcX, y: initialcY }, this.beta);
 
         this.drawInnerCircle(this.o, this.currentAngle);
 
-        this.prms.penPosition = { x: 20, y: -this.prms.dimensions.innerCircleRadius + 20 };
+        // this.prms.penPosition = { x: 35, y: 20 };
 
         if (this.inking && (this.step % this.prms.frequency === 0)) {
-            this.addPoint(this.currentPointPosition(this.prms.penPosition, this.o, this.currentAngle));
+            this.addPoint(this.currentPenPosition(this.prms.penPosition, this.o, this.currentAngle));
         }
 
         // draw points
@@ -108,7 +117,7 @@ export class Spirograph {
     }
 
     // position du stylo
-    private currentPointPosition(pointInitialPosition: IPoint, innerCircleCenter: IPoint, alpha: number) {
+    private currentPenPosition(pointInitialPosition: IPoint, innerCircleCenter: IPoint, alpha: number) {
         return translatePoint(
             rotatePoint(pointInitialPosition, -alpha),
             innerCircleCenter);
@@ -141,26 +150,26 @@ export class Spirograph {
 
     private drawPoint(point: Dot) {
         this.ctx.beginPath();
-        this.ctx.lineWidth = point.lineWidth;
-        this.ctx.strokeStyle = point.color;
-        this.ctx.fillStyle = point.color;
+        this.ctx.lineWidth = point.lineWidth || 3;
+        this.ctx.strokeStyle = point.color || '#000000';
+        this.ctx.fillStyle = point.color || '#000000';
         this.ctx.moveTo(point.x + this.prms.point.xOffset, point.y + this.prms.point.yOffset);
         this.ctx.lineTo(point.x + this.prms.point.xOffset + 1, point.y + this.prms.point.yOffset);
         this.ctx.stroke();
     }
 
     /** positionne le point sur le cercle interne */
-    private setPen(event: any) {
+    private setPenPosition(event: any) {
         const p = this.correctPosition({ x: event.layerX, y: event.layerY });
-        // console.log('clic', event, p, this.o)
-        // console.log('clic', p, { x: event.layerX, y: event.layerY })
         if (this.isInInnerCircle(p)) {
-            console.log('dans le cercle')
+            const oTranslation = (p: IPoint) => translatePoint(p, oppPoint(this.o))
+            const oRotation = (p: IPoint) => rotatePoint(p, this.currentAngle)
+            this.prms.penPosition = o(oRotation, oTranslation)(p)
         }
     }
 
     private isInInnerCircle(p: IPoint) {
-        return isInCircle(p, { center: this.o, radius: this.prms.dimensions.innerCircleRadius})
+        return isInCircle(p, { center: this.o, radius: this.prms.dimensions.innerCircleRadius })
     }
 
     private addPoint(p: IPoint) {
@@ -175,7 +184,7 @@ export class Spirograph {
         const canvasElt = document.getElementById('canvas');
         canvasElt.setAttribute('width', this.prms.dimensions.squareSize.toString());
         canvasElt.setAttribute('height', this.prms.dimensions.squareSize.toString());
-        canvasElt.addEventListener('click', this.setPen.bind(this), false);
+        canvasElt.addEventListener('click', this.setPenPosition.bind(this), false);
 
         // on fait une interface avec l'extérieur
         this.window.requestAnimationFrame(this.draw.bind(this));

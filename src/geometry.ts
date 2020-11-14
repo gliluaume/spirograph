@@ -13,6 +13,14 @@ export const rotatePoint = (p: IPoint, alpha: number) => ({
     y: p.x * Math.sin(alpha) + p.y * Math.cos(alpha)
 })
 
+export const identity = (x: any) => x
+
+/** Function composition */
+export const o = (...fns: Function[]) =>
+    fns.reduce(
+        (composition, f) => (x: any) => composition(f(x)),
+        identity)
+
 export const oppPoint = (p: IPoint) => ({
     x: -p.x,
     y: -p.y,
@@ -25,6 +33,5 @@ export const translatePoint = (p: IPoint, q: IPoint) => ({
 
 export const isInCircle = (p: IPoint, c: ICircle) => {
     var translated = translatePoint(p, oppPoint(c.center));
-    console.log('translated', translated, 'of', p);
     return (Math.pow(translated.x, 2) + Math.pow(translated.y, 2) < Math.pow(c.radius, 2));
 }
