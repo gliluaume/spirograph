@@ -21,6 +21,12 @@ export const o = (...fns: Function[]) =>
         (composition, f) => (x: any) => composition(f(x)),
         identity)
 
+export const eq = (a: IPoint, b: IPoint) => {
+    const delta = 1
+    const v = (Math.abs(a.x - b.x) < delta) && (Math.abs(a.y - b.y) < delta)
+    console.log(a,b,v)
+    return v
+}
 export const oppPoint = (p: IPoint) => ({
     x: -p.x,
     y: -p.y,

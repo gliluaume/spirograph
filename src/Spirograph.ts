@@ -1,5 +1,5 @@
-import { IPoint, isInCircle, oppPoint, rotatePoint, translatePoint, o } from "./geometry"
-import { Dot, Parameters } from "./Parameters"
+import { IPoint, isInCircle, oppPoint, rotatePoint, translatePoint, o, eq } from "./geometry"
+import { Dot, EStyle, Parameters } from "./Parameters"
 
 
 export class Spirograph {
@@ -16,12 +16,12 @@ export class Spirograph {
     private currentAngleStep: number
     private beta: number
     private points: Dot[]
-    private pointing: boolean
     private inking: boolean
     private step: number
     private lastSeq: number
     private o: IPoint
     private O: IPoint
+    private originalPenPosition: IPoint
 
     public prms: Parameters
 
@@ -32,7 +32,6 @@ export class Spirograph {
         this.currentAngle = 0
         this.currentAngleStep = 0 // cumul de valeur d'angle sans le modulo 2Pi
         this.points = []
-        this.pointing = null // if mouse down
         this.inking = false
         this.step = 0
         this.lastSeq = 0
@@ -41,6 +40,12 @@ export class Spirograph {
         this.O = {
             x: this.prms.dimensions.squareSize / 2,
             y: this.prms.dimensions.squareSize / 2,
+        }
+
+        // TODO refactor cf this.o in draw
+        this.originalPenPosition = {
+            x: this.prms.dimensions.innerCircleRadius - this.prms.dimensions.outterCircleRadius + this.prms.dimensions.lineWidth,
+            y: 0,
         }
     }
 
@@ -87,18 +92,29 @@ export class Spirograph {
         this.drawInnerCircle(this.o, this.currentAngle);
 
         // this.prms.penPosition = { x: 35, y: 20 };
-
         if (this.inking && (this.step % this.prms.frequency === 0)) {
             this.addPoint(this.currentPenPosition());
         }
 
-        // draw points
-        this.points.forEach((point) => this.drawPoint(point));
+        // draw points (TODO refactor)
+        if (this.prms.style === EStyle.dot) {
+            this.points.forEach((point, index) => {
+                if (index > 0 && !point.firstOfSequence) {
+                    // const previousPoint = this.points[index - 1]
+                    const previousPoint = this.points[index - 1]
+                    if (!previousPoint.firstOfSequence) {
+                        this.drawLine(previousPoint, point)
+                    }
+                }
+            });
+        } else if (this.prms.style === EStyle.line) {
+            this.points.forEach((point) => this.drawPoint(point));
+        }
 
         this.ctx.restore();
         this.step++;
-        // setTimeout(() => window.requestAnimationFrame(draw), 10)
-        this.window.requestAnimationFrame(this.draw.bind(this))
+        setTimeout(() => this.window.requestAnimationFrame(this.draw.bind(this)), 20)
+        // this.window.requestAnimationFrame(this.draw.bind(this))
     }
 
     private clear() {
@@ -118,9 +134,10 @@ export class Spirograph {
 
     // position du stylo
     private currentPenPosition() {
-        return translatePoint(
-            rotatePoint(this.prms.penPosition, -this.currentAngle),
-            this.o);
+        return this.asFixedCoordinates(this.prms.penPosition)
+        // return translatePoint(
+        //     rotatePoint(this.prms.penPosition, -this.currentAngle),
+        //     this.o);
     }
 
     private drawInnerCircle(point: IPoint, alpha: number) {
@@ -148,11 +165,21 @@ export class Spirograph {
     private stop() { this.inking = false; }
     private stopCircle() { this.prms.angularSpeed = 0; }
 
+    private drawLine(a: Dot, b: Dot) {
+        this.ctx.beginPath();
+        this.ctx.lineWidth = a.lineWidth || 3;
+        this.ctx.strokeStyle = a.color || '#000000';
+        this.ctx.fillStyle = a.color || '#000000';
+        this.ctx.moveTo(a.x, a.y);
+        this.ctx.lineTo(b.x, b.y);
+        this.ctx.stroke();
+    }
+
     private drawPoint(point: Dot) {
         this.ctx.beginPath();
-        this.ctx.lineWidth = point.lineWidth || 3;
-        this.ctx.strokeStyle = point.color || '#000000';
-        this.ctx.fillStyle = point.color || '#000000';
+        this.ctx.lineWidth = point.lineWidth || 3;
+        this.ctx.strokeStyle = point.color || '#000000';
+        this.ctx.fillStyle = point.color || '#000000';
         this.ctx.moveTo(point.x + this.prms.point.xOffset, point.y + this.prms.point.yOffset);
         this.ctx.lineTo(point.x + this.prms.point.xOffset + 1, point.y + this.prms.point.yOffset);
         this.ctx.stroke();
@@ -162,18 +189,53 @@ export class Spirograph {
     private setPenPosition(event: any) {
         const p = this.correctPosition({ x: event.layerX, y: event.layerY });
         if (this.isInInnerCircle(p)) {
-            const oTranslation = (p: IPoint) => translatePoint(p, oppPoint(this.o))
-            const oRotation = (p: IPoint) => rotatePoint(p, this.currentAngle)
-            this.prms.penPosition = o(oRotation, oTranslation)(p)
+            // const oTranslation = (p: IPoint) => translatePoint(p, oppPoint(this.o))
+            // const oRotation = (p: IPoint) => rotatePoint(p, this.currentAngle)
+            // this.prms.penPosition = o(oRotation, oTranslation)(p)
+            this.originalPenPosition = p
+            this.prms.penPosition = this.asInnerCircleCoordinates(p)
         }
+    }
+
+    private asInnerCircleCoordinates(p: IPoint) {
+        const oTranslation = (p: IPoint) => translatePoint(p, oppPoint(this.o))
+        const oRotation = (p: IPoint) => rotatePoint(p, this.currentAngle)
+        return o(oRotation, oTranslation)(p)
+    }
+
+    private asFixedCoordinates(p: IPoint) {
+        return translatePoint(
+            rotatePoint(p, -this.currentAngle),
+            this.o);
     }
 
     private isInInnerCircle(p: IPoint) {
         return isInCircle(p, { center: this.o, radius: this.prms.dimensions.innerCircleRadius })
     }
 
+    // abandonné, marche pas bien
+    // private addPoints() {
+    //     const innerStepAngle = 0.01
+    //     let intermediateAngle = this.currentAngle - this.prms.angularSpeed
+    //     const maxAngleStep = this.currentAngle
+    //     let i = 0
+    //     while (intermediateAngle < maxAngleStep) {
+    //         intermediateAngle += innerStepAngle
+    //         const interPoint = this.currentPenPosition(intermediateAngle)
+    //         this.addPoint(interPoint)
+    //         i++
+    //     }
+    //     console.log('added', i, 'points')
+    // }
+
     private addPoint(p: IPoint) {
-        this.points.push(Object.assign({}, this.prms.point, p, { seq: this.lastSeq }));
+        // console.log(p)
+        // console.log(eq(this.originalPenPosition, p))
+        // const firstOfSequence = eq(this.prms.penPosition, this.asInnerCircleCoordinates(p))
+        const firstOfSequence = eq(this.originalPenPosition, p)
+        const dot = Object.assign(new Dot(), this.prms.point, p, { firstOfSequence, seq: this.lastSeq })
+        console.log(dot)
+        this.points.push(dot);
     }
 
     private correctPosition(p: IPoint): IPoint {

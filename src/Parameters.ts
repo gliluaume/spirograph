@@ -1,5 +1,11 @@
 import { IPoint } from './geometry'
 
+
+export enum EStyle {
+    dot = 'dot',
+    line = 'line',
+}
+
 export class Parameters {
     public angularSpeed: number
     public frequency: number
@@ -7,6 +13,7 @@ export class Parameters {
     public penPosition: IPoint
     public point: Dot // TODO renommer en 'dot'
     public dimensions: Dimensions
+    public style: EStyle
 
     constructor() {
         this.angularSpeed = 0
@@ -14,6 +21,7 @@ export class Parameters {
         this.penPosition = { x: 0, y: 0 }
         this.point = new Dot()
         this.dimensions = new Dimensions()
+        this.style = EStyle.dot
     }
 }
 export class Dot implements IPoint {
@@ -25,6 +33,7 @@ export class Dot implements IPoint {
     public y: number
     public xOffset: number
     public yOffset: number
+    public firstOfSequence: boolean // premier point après positionnement du stylo
 
     constructor(p:IPoint = null) {
         this.color = '#ff0000'
@@ -33,6 +42,7 @@ export class Dot implements IPoint {
         this.seq = 0
         this.xOffset = 0
         this.yOffset = 0
+        this.firstOfSequence = false
 
         if (p) {
             this.x = p.x
