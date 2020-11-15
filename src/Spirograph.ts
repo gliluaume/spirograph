@@ -89,7 +89,7 @@ export class Spirograph {
         // this.prms.penPosition = { x: 35, y: 20 };
 
         if (this.inking && (this.step % this.prms.frequency === 0)) {
-            this.addPoint(this.currentPenPosition(this.prms.penPosition, this.o, this.currentAngle));
+            this.addPoint(this.currentPenPosition());
         }
 
         // draw points
@@ -117,10 +117,10 @@ export class Spirograph {
     }
 
     // position du stylo
-    private currentPenPosition(pointInitialPosition: IPoint, innerCircleCenter: IPoint, alpha: number) {
+    private currentPenPosition() {
         return translatePoint(
-            rotatePoint(pointInitialPosition, -alpha),
-            innerCircleCenter);
+            rotatePoint(this.prms.penPosition, -this.currentAngle),
+            this.o);
     }
 
     private drawInnerCircle(point: IPoint, alpha: number) {
