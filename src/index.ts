@@ -8,15 +8,15 @@ export const bind = (window: any) => {
         document.getElementById('angular-speed').value = Math.round(window.pottingWheelPrms.angularSpeed * 100);
         document.getElementById('color').value = window.pottingWheelPrms.point.color;
         document.getElementById('lineWidth').value = window.pottingWheelPrms.point.lineWidth;
-        document.getElementById('radius').value = window.pottingWheelPrms.point.radius;
+        document.getElementById('radius').value = window.pottingWheelPrms.dimensions.innerCircleRadius;
 
         document.getElementById('angular-speed')
             .addEventListener('change', (event) => {
                 window.pottingWheelPrms.angularSpeed = event.target.value / 100;
             });
         mapPointOption('color', 'color');
-        mapPointOption('radius', 'radius');
         mapPointOption('lineWidth', 'lineWidth');
+        mapPrmsDimensions('radius', 'innerCircleRadius');
 
         mapAction('start', 'start');
         mapAction('stop', 'stop');
@@ -28,6 +28,13 @@ export const bind = (window: any) => {
             document.getElementById(idHtml)
                 .addEventListener('click', (event) => {
                     window.pottingWheelPrms[actionName]();
+                });
+        }
+
+        function mapPrmsDimensions(idHtml: string, optionName: string) {
+            document.getElementById(idHtml)
+                .addEventListener('change', (event) => {
+                    window.pottingWheelPrms.dimensions[optionName] = event.target.value;
                 });
         }
 
