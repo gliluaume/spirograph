@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IPoint, isInCircle, oppPoint, rotatePoint, translatePoint, o, eq } from "./geometry"
 import { Dot, EStyle, Parameters } from "./Parameters"
 
@@ -25,7 +26,7 @@ export class Spirograph {
 
     public prms: Parameters
 
-    constructor(window: any) {
+    constructor(window: Window) {
         this.setCanvasContext('canvas')
         this.window = window
 
@@ -49,11 +50,11 @@ export class Spirograph {
         }
     }
 
-    public setCanvasContext(eltId: string) {
+    public setCanvasContext(eltId: string): void {
         this.ctx = (document.getElementById(eltId) as any).getContext('2d');
     }
 
-    public draw() {
+    public draw(): void {
         this.currentAngleStep = this.currentAngleStep + this.prms.angularSpeed;
         this.currentAngle = (this.currentAngle + this.prms.angularSpeed) % (2 * Math.PI);
         this.ctx.save();
@@ -242,7 +243,7 @@ export class Spirograph {
         return translatePoint(p, oppPoint(this.O))
     }
 
-    public link() {
+    public link(): void {
         const canvasElt = document.getElementById('canvas');
         canvasElt.setAttribute('width', this.prms.dimensions.squareSize.toString());
         canvasElt.setAttribute('height', this.prms.dimensions.squareSize.toString());

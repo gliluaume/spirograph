@@ -5,6 +5,9 @@
   "main": "app.js",
   "scripts": {
     "dev": "rm -rf dist && parcel src/index.html",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "build": "parcel src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,6 +24,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.7.0",
     "@typescript-eslint/parser": "^4.7.0",
+    "cssnano": "^4.1.10",
     "eslint": "^7.13.0",
     "typescript": "^4.0.5"
   }

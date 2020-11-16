@@ -1,6 +1,6 @@
 import { Spirograph } from "./Spirograph";
 
-export const bind = (window: any) => {
+export const bind = (window: Window) => {
     const spirograph = new Spirograph(window)
     spirograph.link()
 
