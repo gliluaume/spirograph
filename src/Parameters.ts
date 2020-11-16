@@ -17,7 +17,7 @@ export class Parameters {
 
     constructor() {
         this.angularSpeed = 0
-        this.frequency = 1
+        this.frequency = 4
         this.penPosition = { x: 0, y: 0 }
         this.point = new Dot()
         this.dimensions = new Dimensions()
@@ -61,10 +61,11 @@ export class Dimensions {
     public innerCircleRadius: number
 
     constructor() {
-        this.squareSize = 600
+        const init = Math.min(window.innerHeight, window.innerWidth) - 20;
+        this.squareSize = init
         this.scaleFactor = 1
-        this.lineWidth = 3
-        this.outterCircleRadius = 240
+        this.lineWidth = 2
+        this.outterCircleRadius = Math.round((init)/2) - 10
         this.circleColor = '#325FA2'
         this.innerCircleColor = '#995FA2'
         this.innerCircleRadius = 50

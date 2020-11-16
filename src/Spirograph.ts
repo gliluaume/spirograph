@@ -27,7 +27,6 @@ export class Spirograph {
     public prms: Parameters
 
     constructor(window: Window) {
-        this.setCanvasContext('canvas')
         this.window = window
 
         this.currentAngle = 0
@@ -59,27 +58,11 @@ export class Spirograph {
         this.currentAngle = (this.currentAngle + this.prms.angularSpeed) % (2 * Math.PI);
         this.ctx.save();
         this.ctx.clearRect(0, 0, this.prms.dimensions.squareSize, this.prms.dimensions.squareSize);
-        // this.ctx.translate(this.prms.dimensions.squareSize / 2, this.prms.dimensions.squareSize / 2);
         this.ctx.translate(this.O.x, this.O.y);
         this.ctx.scale(this.prms.dimensions.scaleFactor, this.prms.dimensions.scaleFactor);
 
-        // Debug: draw axis
-        this.ctx.lineWidth = 1
-        this.ctx.beginPath();
-        this.ctx.moveTo(-300, 0);
-        this.ctx.lineTo(300, 0);
-        this.ctx.moveTo(0, -300);
-        this.ctx.lineTo(0, 300);
-        this.ctx.stroke();
-
-        // draw external circle
-        this.ctx.strokeStyle = this.prms.dimensions.circleColor;
         this.ctx.lineWidth = this.prms.dimensions.lineWidth;
         const outterCircleRadius = this.prms.dimensions.outterCircleRadius;
-        this.ctx.beginPath();
-        this.ctx.strokeStyle = this.prms.dimensions.circleColor;
-        this.ctx.arc(0, 0, outterCircleRadius, 0, Math.PI * 2, true);
-        this.ctx.stroke();
 
         // inner Circle
         // initial (x, y) = o, center of c
@@ -92,8 +75,6 @@ export class Spirograph {
 
         this.drawInnerCircle(this.o, this.currentAngle);
 
-        console.log('points#', this.points.length)
-        // this.prms.penPosition = { x: 35, y: 20 };
         if (this.inking && (this.step % this.prms.frequency === 0)) {
             this.addPoint(this.currentPenPosition());
         }
@@ -115,7 +96,7 @@ export class Spirograph {
 
         this.ctx.restore();
         this.step++;
-        setTimeout(() => this.window.requestAnimationFrame(this.draw.bind(this)), 40)
+        setTimeout(() => this.window.requestAnimationFrame(this.draw.bind(this)), 30)
         // this.window.requestAnimationFrame(this.draw.bind(this))
     }
 
@@ -137,9 +118,6 @@ export class Spirograph {
     // position du stylo
     private currentPenPosition() {
         return this.asFixedCoordinates(this.prms.penPosition)
-        // return translatePoint(
-        //     rotatePoint(this.prms.penPosition, -this.currentAngle),
-        //     this.o);
     }
 
     private drawInnerCircle(point: IPoint, alpha: number) {
@@ -191,9 +169,6 @@ export class Spirograph {
     private setPenPosition(event: any) {
         const p = this.correctPosition({ x: event.layerX, y: event.layerY });
         if (this.isInInnerCircle(p)) {
-            // const oTranslation = (p: IPoint) => translatePoint(p, oppPoint(this.o))
-            // const oRotation = (p: IPoint) => rotatePoint(p, this.currentAngle)
-            // this.prms.penPosition = o(oRotation, oTranslation)(p)
             this.originalPenPosition = p
             this.prms.penPosition = this.asInnerCircleCoordinates(p)
         }
@@ -215,28 +190,9 @@ export class Spirograph {
         return isInCircle(p, { center: this.o, radius: this.prms.dimensions.innerCircleRadius })
     }
 
-    // abandonné, marche pas bien
-    // private addPoints() {
-    //     const innerStepAngle = 0.01
-    //     let intermediateAngle = this.currentAngle - this.prms.angularSpeed
-    //     const maxAngleStep = this.currentAngle
-    //     let i = 0
-    //     while (intermediateAngle < maxAngleStep) {
-    //         intermediateAngle += innerStepAngle
-    //         const interPoint = this.currentPenPosition(intermediateAngle)
-    //         this.addPoint(interPoint)
-    //         i++
-    //     }
-    //     console.log('added', i, 'points')
-    // }
-
     private addPoint(p: IPoint) {
-        // console.log(p)
-        // console.log(eq(this.originalPenPosition, p))
-        // const firstOfSequence = eq(this.prms.penPosition, this.asInnerCircleCoordinates(p))
         const firstOfSequence = eq(this.originalPenPosition, p)
         const dot = Object.assign(new Dot(), this.prms.point, p, { firstOfSequence, seq: this.lastSeq })
-        // console.log(dot)
         this.points.push(dot);
     }
 
@@ -245,10 +201,9 @@ export class Spirograph {
     }
 
     public link(): void {
-        const canvasElt = document.getElementById('canvas');
-        canvasElt.setAttribute('width', this.prms.dimensions.squareSize.toString());
-        canvasElt.setAttribute('height', this.prms.dimensions.squareSize.toString());
-        canvasElt.addEventListener('click', this.setPenPosition.bind(this), false);
+        // const canvasElt = document.getElementById('canvas');
+        // console.log('canvasElt', canvasElt)
+        // canvasElt.addEventListener('click', this.setPenPosition.bind(this), false);
 
         // on fait une interface avec l'extérieur
         this.window.requestAnimationFrame(this.draw.bind(this));
@@ -258,5 +213,53 @@ export class Spirograph {
         this.window.pottingWheelPrms.stopCircle = this.stopCircle.bind(this);
         this.window.pottingWheelPrms.clear = this.clear.bind(this);
         this.window.pottingWheelPrms.undo = this.deleteLastSeq.bind(this);
+    }
+
+    public createLayers(): void {
+        const fixed = document.createElement('canvas');
+        fixed.setAttribute('id', 'fixed');
+
+        const main = document.createElement('canvas');
+        main.setAttribute('id', 'canvas');
+        main.addEventListener('click', this.setPenPosition.bind(this), false);
+
+        const container = document.getElementById('container');
+        container.style.height = `${this.prms.dimensions.squareSize}px`
+        container.style.width = `${this.prms.dimensions.squareSize}px`
+
+        ;[fixed, main].forEach(elt => {
+            elt.setAttribute('width', this.prms.dimensions.squareSize.toString());
+            elt.setAttribute('height', this.prms.dimensions.squareSize.toString());
+            container.appendChild(elt)
+        })
+        this.createFixedElements('fixed')
+        this.setCanvasContext('canvas')
+    }
+
+    private createFixedElements(eltId: string) {
+        const context = (document.getElementById(eltId) as any).getContext('2d');
+        context.save();
+        context.clearRect(0, 0, this.prms.dimensions.squareSize, this.prms.dimensions.squareSize);
+        context.translate(this.O.x, this.O.y);
+        context.scale(this.prms.dimensions.scaleFactor, this.prms.dimensions.scaleFactor);
+
+        // Debug: draw axis
+        context.lineWidth = 1
+        context.beginPath();
+        context.moveTo(-this.prms.dimensions.squareSize, 0);
+        context.lineTo(this.prms.dimensions.squareSize, 0);
+        context.moveTo(0, -this.prms.dimensions.squareSize);
+        context.lineTo(0, this.prms.dimensions.squareSize);
+        context.stroke();
+
+        // draw external circle
+        console.log(this)
+        context.strokeStyle = this.prms.dimensions.circleColor;
+        context.lineWidth = this.prms.dimensions.lineWidth;
+        const outterCircleRadius = this.prms.dimensions.outterCircleRadius;
+        context.beginPath();
+        context.strokeStyle = this.prms.dimensions.circleColor;
+        context.arc(0, 0, outterCircleRadius, 0, Math.PI * 2, true);
+        context.stroke();
     }
 }

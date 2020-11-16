@@ -2,9 +2,11 @@ import { Spirograph } from "./Spirograph";
 
 export const bind = (window: Window) => {
     const spirograph = new Spirograph(window)
+    spirograph.createLayers()
     spirograph.link()
 
     if (window.pottingWheelPrms) {
+
         document.getElementById('angular-speed').value = Math.round(window.pottingWheelPrms.angularSpeed * 100);
         document.getElementById('color').value = window.pottingWheelPrms.point.color;
         document.getElementById('lineWidth').value = window.pottingWheelPrms.point.lineWidth;

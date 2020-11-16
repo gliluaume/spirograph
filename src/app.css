@@ -4,6 +4,7 @@ body {
 canvas {
   border: 1px solid;
   cursor: crosshair;
+  position: absolute;
 }
 form {
   display: grid;
@@ -12,3 +13,5 @@ form {
   display: inline-block;
   vertical-align: top;
 }
+#fixed { z-index: -1 }
+#main { z-index: 10 }
