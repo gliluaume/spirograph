@@ -92,13 +92,14 @@ export class Spirograph {
 
         this.drawInnerCircle(this.o, this.currentAngle);
 
+        console.log('points#', this.points.length)
         // this.prms.penPosition = { x: 35, y: 20 };
         if (this.inking && (this.step % this.prms.frequency === 0)) {
             this.addPoint(this.currentPenPosition());
         }
 
         // draw points (TODO refactor)
-        if (this.prms.style === EStyle.dot) {
+        if (this.prms.style === EStyle.line) {
             this.points.forEach((point, index) => {
                 if (index > 0 && !point.firstOfSequence) {
                     // const previousPoint = this.points[index - 1]
@@ -108,13 +109,13 @@ export class Spirograph {
                     }
                 }
             });
-        } else if (this.prms.style === EStyle.line) {
+        } else if (this.prms.style === EStyle.dot) {
             this.points.forEach((point) => this.drawPoint(point));
         }
 
         this.ctx.restore();
         this.step++;
-        setTimeout(() => this.window.requestAnimationFrame(this.draw.bind(this)), 20)
+        setTimeout(() => this.window.requestAnimationFrame(this.draw.bind(this)), 40)
         // this.window.requestAnimationFrame(this.draw.bind(this))
     }
 
@@ -235,7 +236,7 @@ export class Spirograph {
         // const firstOfSequence = eq(this.prms.penPosition, this.asInnerCircleCoordinates(p))
         const firstOfSequence = eq(this.originalPenPosition, p)
         const dot = Object.assign(new Dot(), this.prms.point, p, { firstOfSequence, seq: this.lastSeq })
-        console.log(dot)
+        // console.log(dot)
         this.points.push(dot);
     }
 

@@ -21,7 +21,7 @@ export class Parameters {
         this.penPosition = { x: 0, y: 0 }
         this.point = new Dot()
         this.dimensions = new Dimensions()
-        this.style = EStyle.dot
+        this.style = EStyle.line
     }
 }
 export class Dot implements IPoint {
