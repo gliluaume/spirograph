@@ -14,6 +14,7 @@ export class Parameters {
     public point: Dot // TODO renommer en 'dot'
     public dimensions: Dimensions
     public style: EStyle
+    public showGrid: boolean
 
     constructor() {
         this.angularSpeed = 0
@@ -22,6 +23,7 @@ export class Parameters {
         this.point = new Dot()
         this.dimensions = new Dimensions()
         this.style = EStyle.line
+        this.showGrid = true
     }
 }
 export class Dot implements IPoint {
@@ -68,6 +70,6 @@ export class Dimensions {
         this.outterCircleRadius = Math.round((init)/2) - 10
         this.circleColor = '#325FA2'
         this.innerCircleColor = '#995FA2'
-        this.innerCircleRadius = 50
+        this.innerCircleRadius = Math.round(this.outterCircleRadius / 5)
     }
 }

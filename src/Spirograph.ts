@@ -4,8 +4,9 @@ import { Dot, EStyle, Parameters } from "./Parameters"
 
 
 export class Spirograph {
-    private ctx: any
     private window: any
+    private ctxPaper: any
+    private ctxInnerCircle: any
 
     // currentAngle (=alpha) est l'angle de rotation du cercle interne
     // quand le cercle interne tourne de alpha, on considère qu'il roule sur le bord intérieur
@@ -49,19 +50,15 @@ export class Spirograph {
         }
     }
 
-    public setCanvasContext(eltId: string): void {
-        this.ctx = (document.getElementById(eltId) as any).getContext('2d');
-    }
-
     public draw(): void {
         this.currentAngleStep = this.currentAngleStep + this.prms.angularSpeed;
         this.currentAngle = (this.currentAngle + this.prms.angularSpeed) % (2 * Math.PI);
-        this.ctx.save();
-        this.ctx.clearRect(0, 0, this.prms.dimensions.squareSize, this.prms.dimensions.squareSize);
-        this.ctx.translate(this.O.x, this.O.y);
-        this.ctx.scale(this.prms.dimensions.scaleFactor, this.prms.dimensions.scaleFactor);
+        this.ctxPaper.save();
+        this.ctxPaper.clearRect(0, 0, this.prms.dimensions.squareSize, this.prms.dimensions.squareSize);
+        this.ctxPaper.translate(this.O.x, this.O.y);
+        this.ctxPaper.scale(this.prms.dimensions.scaleFactor, this.prms.dimensions.scaleFactor);
 
-        this.ctx.lineWidth = this.prms.dimensions.lineWidth;
+        this.ctxPaper.lineWidth = this.prms.dimensions.lineWidth;
         const outterCircleRadius = this.prms.dimensions.outterCircleRadius;
 
         // inner Circle
@@ -94,7 +91,7 @@ export class Spirograph {
             this.points.forEach((point) => this.drawPoint(point));
         }
 
-        this.ctx.restore();
+        this.ctxPaper.restore();
         this.step++;
         setTimeout(() => this.window.requestAnimationFrame(this.draw.bind(this)), 30)
         // this.window.requestAnimationFrame(this.draw.bind(this))
@@ -121,24 +118,39 @@ export class Spirograph {
     }
 
     private drawInnerCircle(point: IPoint, alpha: number) {
-        this.ctx.strokeStyle = this.prms.dimensions.innerCircleColor;
+        this.ctxInnerCircle.save();
+        this.ctxInnerCircle.clearRect(0, 0, this.prms.dimensions.squareSize, this.prms.dimensions.squareSize);
+        this.ctxInnerCircle.translate(this.O.x, this.O.y);
+        this.ctxInnerCircle.scale(this.prms.dimensions.scaleFactor, this.prms.dimensions.scaleFactor);
 
-        // a mark
-        const markStart = translatePoint(
+        this.ctxInnerCircle.strokeStyle = this.prms.dimensions.innerCircleColor;
+
+        // a grid
+        const verticalStart = translatePoint(
             rotatePoint({ x: 0, y: -this.prms.dimensions.innerCircleRadius }, -alpha),
             point);
-        const markEnd = translatePoint(
-            rotatePoint({ x: 0, y: -this.prms.dimensions.innerCircleRadius + 10 }, -alpha),
+        const verticalEnd = translatePoint(
+            rotatePoint({ x: 0, y: this.prms.dimensions.innerCircleRadius }, -alpha),
+            point);
+        const horizontalStart = translatePoint(
+            rotatePoint({ x: -this.prms.dimensions.innerCircleRadius, y: 0 }, -alpha),
+            point);
+        const horizontalEnd = translatePoint(
+            rotatePoint({ x: this.prms.dimensions.innerCircleRadius, y: 0 }, -alpha),
             point);
 
-        this.ctx.beginPath();
-        this.ctx.moveTo(markStart.x, markStart.y);
-        this.ctx.lineTo(markEnd.x, markEnd.y);
-        this.ctx.stroke();
+        this.ctxInnerCircle.beginPath();
+        this.ctxInnerCircle.moveTo(verticalStart.x, verticalStart.y);
+        this.ctxInnerCircle.lineTo(verticalEnd.x, verticalEnd.y);
+        this.ctxInnerCircle.moveTo(horizontalStart.x, horizontalStart.y);
+        this.ctxInnerCircle.lineTo(horizontalEnd.x, horizontalEnd.y);
+        this.ctxInnerCircle.stroke();
 
-        this.ctx.beginPath();
-        this.ctx.arc(point.x, point.y, this.prms.dimensions.innerCircleRadius, 0, Math.PI * 2, true);
-        this.ctx.stroke();
+        this.ctxInnerCircle.beginPath();
+        this.ctxInnerCircle.arc(point.x, point.y, this.prms.dimensions.innerCircleRadius, 0, Math.PI * 2, true);
+        this.ctxInnerCircle.stroke();
+
+        this.ctxInnerCircle.restore();
     }
 
     private start() { this.inking = true; }
@@ -146,23 +158,23 @@ export class Spirograph {
     private stopCircle() { this.prms.angularSpeed = 0; }
 
     private drawLine(a: Dot, b: Dot) {
-        this.ctx.beginPath();
-        this.ctx.lineWidth = a.lineWidth || 3;
-        this.ctx.strokeStyle = a.color || '#000000';
-        this.ctx.fillStyle = a.color || '#000000';
-        this.ctx.moveTo(a.x, a.y);
-        this.ctx.lineTo(b.x, b.y);
-        this.ctx.stroke();
+        this.ctxPaper.beginPath();
+        this.ctxPaper.lineWidth = a.lineWidth || 3;
+        this.ctxPaper.strokeStyle = a.color || '#000000';
+        this.ctxPaper.fillStyle = a.color || '#000000';
+        this.ctxPaper.moveTo(a.x, a.y);
+        this.ctxPaper.lineTo(b.x, b.y);
+        this.ctxPaper.stroke();
     }
 
     private drawPoint(point: Dot) {
-        this.ctx.beginPath();
-        this.ctx.lineWidth = point.lineWidth || 3;
-        this.ctx.strokeStyle = point.color || '#000000';
-        this.ctx.fillStyle = point.color || '#000000';
-        this.ctx.moveTo(point.x + this.prms.point.xOffset, point.y + this.prms.point.yOffset);
-        this.ctx.lineTo(point.x + this.prms.point.xOffset + 1, point.y + this.prms.point.yOffset);
-        this.ctx.stroke();
+        this.ctxPaper.beginPath();
+        this.ctxPaper.lineWidth = point.lineWidth || 3;
+        this.ctxPaper.strokeStyle = point.color || '#000000';
+        this.ctxPaper.fillStyle = point.color || '#000000';
+        this.ctxPaper.moveTo(point.x + this.prms.point.xOffset, point.y + this.prms.point.yOffset);
+        this.ctxPaper.lineTo(point.x + this.prms.point.xOffset + 1, point.y + this.prms.point.yOffset);
+        this.ctxPaper.stroke();
     }
 
     /** positionne le point sur le cercle interne */
@@ -200,60 +212,87 @@ export class Spirograph {
         return translatePoint(p, oppPoint(this.O))
     }
 
-    public link(): void {
-        // const canvasElt = document.getElementById('canvas');
-        // console.log('canvasElt', canvasElt)
-        // canvasElt.addEventListener('click', this.setPenPosition.bind(this), false);
+    public save(): void {
+        const canvas = document.getElementById('paper') as any;
+        const imageDl = document.getElementById('canvasImgDl') as any;
+        imageDl.href = canvas.toDataURL();
+        document.getElementById('canvasImgDl').click()
+    }
 
+    public toggleGrid(): void {
+        console.log('hoho', this.prms.showGrid)
+        this.prms.showGrid = !this.prms.showGrid
+        this.createFixedElements()
+    }
+
+    public link(): void {
         // on fait une interface avec l'extérieur
         this.window.requestAnimationFrame(this.draw.bind(this));
         this.window.pottingWheelPrms = this.prms;
+        this.window.pottingWheelPrms.toggleGrid = this.toggleGrid.bind(this);
         this.window.pottingWheelPrms.start = this.start.bind(this);
         this.window.pottingWheelPrms.stop = this.stop.bind(this);
         this.window.pottingWheelPrms.stopCircle = this.stopCircle.bind(this);
         this.window.pottingWheelPrms.clear = this.clear.bind(this);
         this.window.pottingWheelPrms.undo = this.deleteLastSeq.bind(this);
+        this.window.pottingWheelPrms.save = this.save.bind(this);
     }
 
     public createLayers(): void {
-        const fixed = document.createElement('canvas');
-        fixed.setAttribute('id', 'fixed');
+        const [fixed, paper, innerCircle] = ['fixed', 'paper', 'innerCircle'].map((id: string) => {
+            const canvas = document.createElement('canvas')
+            canvas.setAttribute('id', id)
+            return canvas
+        })
 
-        const main = document.createElement('canvas');
-        main.setAttribute('id', 'canvas');
-        main.addEventListener('click', this.setPenPosition.bind(this), false);
+        fixed.style.zIndex = '-11';
+        paper.style.zIndex = '-1';
+        innerCircle.style.zIndex = '10';
+
+        innerCircle.addEventListener('click', this.setPenPosition.bind(this), false);
 
         const container = document.getElementById('container');
         container.style.height = `${this.prms.dimensions.squareSize}px`
         container.style.width = `${this.prms.dimensions.squareSize}px`
 
-        ;[fixed, main].forEach(elt => {
-            elt.setAttribute('width', this.prms.dimensions.squareSize.toString());
-            elt.setAttribute('height', this.prms.dimensions.squareSize.toString());
-            container.appendChild(elt)
-        })
-        this.createFixedElements('fixed')
-        this.setCanvasContext('canvas')
+            ;[fixed, paper, innerCircle].forEach(elt => {
+                elt.setAttribute('width', this.prms.dimensions.squareSize.toString());
+                elt.setAttribute('height', this.prms.dimensions.squareSize.toString());
+                container.appendChild(elt)
+            })
+        this.createFixedElements()
+        this.ctxPaper = this.get2dContext('paper');
+        this.ctxInnerCircle = this.get2dContext('innerCircle');
     }
 
-    private createFixedElements(eltId: string) {
-        const context = (document.getElementById(eltId) as any).getContext('2d');
+    private get2dContext(eltId: string): void {
+        return (document.getElementById(eltId) as any).getContext('2d');
+    }
+
+
+    private createFixedElements() {
+        const elt = document.getElementById('fixed')
+        const context = (elt as any).getContext('2d');
         context.save();
         context.clearRect(0, 0, this.prms.dimensions.squareSize, this.prms.dimensions.squareSize);
         context.translate(this.O.x, this.O.y);
         context.scale(this.prms.dimensions.scaleFactor, this.prms.dimensions.scaleFactor);
 
         // Debug: draw axis
-        context.lineWidth = 1
-        context.beginPath();
-        context.moveTo(-this.prms.dimensions.squareSize, 0);
-        context.lineTo(this.prms.dimensions.squareSize, 0);
-        context.moveTo(0, -this.prms.dimensions.squareSize);
-        context.lineTo(0, this.prms.dimensions.squareSize);
-        context.stroke();
+        if (this.prms.showGrid) {
+            elt.style.border = '1px solid'
+            context.lineWidth = 1
+            context.beginPath();
+            context.moveTo(-this.prms.dimensions.squareSize, 0);
+            context.lineTo(this.prms.dimensions.squareSize, 0);
+            context.moveTo(0, -this.prms.dimensions.squareSize);
+            context.lineTo(0, this.prms.dimensions.squareSize);
+            context.stroke();
+        } else {
+            elt.style.border = '0px solid'
+        }
 
         // draw external circle
-        console.log(this)
         context.strokeStyle = this.prms.dimensions.circleColor;
         context.lineWidth = this.prms.dimensions.lineWidth;
         const outterCircleRadius = this.prms.dimensions.outterCircleRadius;
@@ -261,5 +300,6 @@ export class Spirograph {
         context.strokeStyle = this.prms.dimensions.circleColor;
         context.arc(0, 0, outterCircleRadius, 0, Math.PI * 2, true);
         context.stroke();
+        context.restore();
     }
 }
