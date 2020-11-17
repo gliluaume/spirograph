@@ -238,6 +238,10 @@ export class Spirograph {
             return canvas
         })
 
+        fixed.style.zIndex = '-11';
+        paper.style.zIndex = '-1';
+        innerCircle.style.zIndex = '10';
+
         innerCircle.addEventListener('click', this.setPenPosition.bind(this), false);
 
         const container = document.getElementById('container');
