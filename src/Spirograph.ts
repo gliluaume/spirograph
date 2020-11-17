@@ -125,17 +125,25 @@ export class Spirograph {
 
         this.ctxInnerCircle.strokeStyle = this.prms.dimensions.innerCircleColor;
 
-        // a mark
-        const markStart = translatePoint(
+        // a grid
+        const verticalStart = translatePoint(
             rotatePoint({ x: 0, y: -this.prms.dimensions.innerCircleRadius }, -alpha),
             point);
-        const markEnd = translatePoint(
-            rotatePoint({ x: 0, y: -this.prms.dimensions.innerCircleRadius + 10 }, -alpha),
+        const verticalEnd = translatePoint(
+            rotatePoint({ x: 0, y: this.prms.dimensions.innerCircleRadius }, -alpha),
+            point);
+        const horizontalStart = translatePoint(
+            rotatePoint({ x: -this.prms.dimensions.innerCircleRadius, y: 0 }, -alpha),
+            point);
+        const horizontalEnd = translatePoint(
+            rotatePoint({ x: this.prms.dimensions.innerCircleRadius, y: 0 }, -alpha),
             point);
 
         this.ctxInnerCircle.beginPath();
-        this.ctxInnerCircle.moveTo(markStart.x, markStart.y);
-        this.ctxInnerCircle.lineTo(markEnd.x, markEnd.y);
+        this.ctxInnerCircle.moveTo(verticalStart.x, verticalStart.y);
+        this.ctxInnerCircle.lineTo(verticalEnd.x, verticalEnd.y);
+        this.ctxInnerCircle.moveTo(horizontalStart.x, horizontalStart.y);
+        this.ctxInnerCircle.lineTo(horizontalEnd.x, horizontalEnd.y);
         this.ctxInnerCircle.stroke();
 
         this.ctxInnerCircle.beginPath();
@@ -209,7 +217,7 @@ export class Spirograph {
         const imageDl = document.getElementById('canvasImgDl') as any;
         imageDl.href = canvas.toDataURL();
         document.getElementById('canvasImgDl').click()
-      }
+    }
 
     public link(): void {
         // on fait une interface avec l'extérieur
@@ -236,11 +244,11 @@ export class Spirograph {
         container.style.height = `${this.prms.dimensions.squareSize}px`
         container.style.width = `${this.prms.dimensions.squareSize}px`
 
-        ;[fixed, paper, innerCircle].forEach(elt => {
-            elt.setAttribute('width', this.prms.dimensions.squareSize.toString());
-            elt.setAttribute('height', this.prms.dimensions.squareSize.toString());
-            container.appendChild(elt)
-        })
+            ;[fixed, paper, innerCircle].forEach(elt => {
+                elt.setAttribute('width', this.prms.dimensions.squareSize.toString());
+                elt.setAttribute('height', this.prms.dimensions.squareSize.toString());
+                container.appendChild(elt)
+            })
         this.createFixedElements('fixed')
         this.ctxPaper = this.get2dContext('paper');
         this.ctxInnerCircle = this.get2dContext('innerCircle');
