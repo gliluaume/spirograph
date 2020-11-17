@@ -2,7 +2,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 canvas {
-  border: 1px solid;
+  /* border: 1px solid; */
   cursor: crosshair;
   position: absolute;
 }
@@ -12,4 +12,7 @@ form {
 .inline {
   display: inline-block;
   vertical-align: top;
+}
+input, button {
+  height: 3em;
 }

@@ -219,10 +219,17 @@ export class Spirograph {
         document.getElementById('canvasImgDl').click()
     }
 
+    public toggleGrid(): void {
+        console.log('hoho', this.prms.showGrid)
+        this.prms.showGrid = !this.prms.showGrid
+        this.createFixedElements()
+    }
+
     public link(): void {
         // on fait une interface avec l'extérieur
         this.window.requestAnimationFrame(this.draw.bind(this));
         this.window.pottingWheelPrms = this.prms;
+        this.window.pottingWheelPrms.toggleGrid = this.toggleGrid.bind(this);
         this.window.pottingWheelPrms.start = this.start.bind(this);
         this.window.pottingWheelPrms.stop = this.stop.bind(this);
         this.window.pottingWheelPrms.stopCircle = this.stopCircle.bind(this);
@@ -253,7 +260,7 @@ export class Spirograph {
                 elt.setAttribute('height', this.prms.dimensions.squareSize.toString());
                 container.appendChild(elt)
             })
-        this.createFixedElements('fixed')
+        this.createFixedElements()
         this.ctxPaper = this.get2dContext('paper');
         this.ctxInnerCircle = this.get2dContext('innerCircle');
     }
@@ -263,24 +270,29 @@ export class Spirograph {
     }
 
 
-    private createFixedElements(eltId: string) {
-        const context = (document.getElementById(eltId) as any).getContext('2d');
+    private createFixedElements() {
+        const elt = document.getElementById('fixed')
+        const context = (elt as any).getContext('2d');
         context.save();
         context.clearRect(0, 0, this.prms.dimensions.squareSize, this.prms.dimensions.squareSize);
         context.translate(this.O.x, this.O.y);
         context.scale(this.prms.dimensions.scaleFactor, this.prms.dimensions.scaleFactor);
 
         // Debug: draw axis
-        context.lineWidth = 1
-        context.beginPath();
-        context.moveTo(-this.prms.dimensions.squareSize, 0);
-        context.lineTo(this.prms.dimensions.squareSize, 0);
-        context.moveTo(0, -this.prms.dimensions.squareSize);
-        context.lineTo(0, this.prms.dimensions.squareSize);
-        context.stroke();
+        if (this.prms.showGrid) {
+            elt.style.border = '1px solid'
+            context.lineWidth = 1
+            context.beginPath();
+            context.moveTo(-this.prms.dimensions.squareSize, 0);
+            context.lineTo(this.prms.dimensions.squareSize, 0);
+            context.moveTo(0, -this.prms.dimensions.squareSize);
+            context.lineTo(0, this.prms.dimensions.squareSize);
+            context.stroke();
+        } else {
+            elt.style.border = '0px solid'
+        }
 
         // draw external circle
-        console.log(this)
         context.strokeStyle = this.prms.dimensions.circleColor;
         context.lineWidth = this.prms.dimensions.lineWidth;
         const outterCircleRadius = this.prms.dimensions.outterCircleRadius;
@@ -288,5 +300,6 @@ export class Spirograph {
         context.strokeStyle = this.prms.dimensions.circleColor;
         context.arc(0, 0, outterCircleRadius, 0, Math.PI * 2, true);
         context.stroke();
+        context.restore();
     }
 }
