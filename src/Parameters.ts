@@ -17,7 +17,7 @@ export class Parameters {
 
     constructor() {
         this.angularSpeed = 0
-        this.frequency = 4
+        this.frequency = 1
         this.penPosition = { x: 0, y: 0 }
         this.point = new Dot()
         this.dimensions = new Dimensions()
