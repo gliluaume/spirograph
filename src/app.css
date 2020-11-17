@@ -13,5 +13,6 @@ form {
   display: inline-block;
   vertical-align: top;
 }
-#fixed { z-index: -1 }
-#main { z-index: 10 }
+#fixed { z-index: -11 }
+#paper { z-index: -1 }
+#innerCircle { z-index: 10 }

@@ -25,6 +25,7 @@ export const bind = (window: Window) => {
         mapAction('stop-circle', 'stopCircle');
         mapAction('clear', 'clear');
         mapAction('undo', 'undo');
+        mapAction('save', 'save');
 
         function mapAction(idHtml: string, actionName: string) {
             document.getElementById(idHtml)

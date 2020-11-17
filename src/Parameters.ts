@@ -68,6 +68,6 @@ export class Dimensions {
         this.outterCircleRadius = Math.round((init)/2) - 10
         this.circleColor = '#325FA2'
         this.innerCircleColor = '#995FA2'
-        this.innerCircleRadius = 50
+        this.innerCircleRadius = Math.round(this.outterCircleRadius / 5)
     }
 }
