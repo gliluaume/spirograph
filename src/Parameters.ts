@@ -8,7 +8,8 @@ export enum EStyle {
 
 export class Parameters {
     public angularSpeed: number
-    public frequency: number
+    public addPointPeriod: number
+    public drawPeriod: number
     // Position du stylo relativement au cercle interne
     public penPosition: IPoint
     public point: Dot // TODO renommer en 'dot'
@@ -18,7 +19,8 @@ export class Parameters {
 
     constructor() {
         this.angularSpeed = 0
-        this.frequency = 1
+        this.addPointPeriod = 1
+        this.drawPeriod = 30
         this.penPosition = { x: 0, y: 0 }
         this.point = new Dot()
         this.dimensions = new Dimensions()

@@ -72,17 +72,16 @@ export class Spirograph {
 
         this.drawInnerCircle(this.o, this.currentAngle);
 
-        if (this.inking && (this.step % this.prms.frequency === 0)) {
+        if (this.prms.angularSpeed !== 0 && this.inking && (this.step % this.prms.addPointPeriod === 0)) {
             this.addPoint(this.currentPenPosition());
         }
 
         // draw points (TODO refactor)
         if (this.prms.style === EStyle.line) {
             this.points.forEach((point, index) => {
-                if (index > 0 && !point.firstOfSequence) {
-                    // const previousPoint = this.points[index - 1]
+                if (index > 0) {
                     const previousPoint = this.points[index - 1]
-                    if (!previousPoint.firstOfSequence) {
+                    if (previousPoint.seq === point.seq) {
                         this.drawLine(previousPoint, point)
                     }
                 }
@@ -93,8 +92,7 @@ export class Spirograph {
 
         this.ctxPaper.restore();
         this.step++;
-        setTimeout(() => this.window.requestAnimationFrame(this.draw.bind(this)), 30)
-        // this.window.requestAnimationFrame(this.draw.bind(this))
+        setTimeout(() => this.window.requestAnimationFrame(this.draw.bind(this)), this.prms.drawPeriod)
     }
 
     private clear() {
@@ -102,14 +100,8 @@ export class Spirograph {
     }
 
     private deleteLastSeq() {
-        this.points = this.points.filter(p => p.seq < this.lastSeq);
-        this.lastSeq = this.getLastSeq();
-    }
-
-    private getLastSeq() {
-        return this.points.length
-            ? Math.max.apply(null, this.points.map(point => point.seq))
-            : 0;
+        this.points = this.points.filter(p => p.seq !== this.lastSeq);
+        this.lastSeq--;
     }
 
     // position du stylo
@@ -184,6 +176,7 @@ export class Spirograph {
             this.originalPenPosition = p
             this.prms.penPosition = this.asInnerCircleCoordinates(p)
         }
+        this.lastSeq++;
     }
 
     private asInnerCircleCoordinates(p: IPoint) {
