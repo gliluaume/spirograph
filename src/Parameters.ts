@@ -20,7 +20,7 @@ export class Parameters {
     constructor() {
         this.angularSpeed = 0
         this.addPointPeriod = 1
-        this.drawPeriod = 100
+        this.drawPeriod = 30
         this.penPosition = { x: 0, y: 0 }
         this.point = new Dot()
         this.dimensions = new Dimensions()
