@@ -19,11 +19,13 @@ export class Spirograph {
     private beta: number
     private points: Dot[]
     private inking: boolean
+    private needDraw: boolean
     private step: number
     private lastSeq: number
     private o: IPoint
     private O: IPoint
     private originalPenPosition: IPoint
+    private sequenceIndex: number[]
 
     public prms: Parameters
 
@@ -38,11 +40,12 @@ export class Spirograph {
         this.lastSeq = 0
         this.o = null
         this.prms = new Parameters()
+        this.needDraw = true
         this.O = {
             x: this.prms.dimensions.squareSize / 2,
             y: this.prms.dimensions.squareSize / 2,
         }
-
+        this.sequenceIndex = []
         // TODO refactor cf this.o in draw
         this.originalPenPosition = {
             x: this.prms.dimensions.innerCircleRadius - this.prms.dimensions.outterCircleRadius + this.prms.dimensions.lineWidth,
@@ -51,6 +54,12 @@ export class Spirograph {
     }
 
     public draw(): void {
+        // for infinite loop
+        setTimeout(() => this.window.requestAnimationFrame(this.draw.bind(this)), this.prms.drawPeriod)
+        // do not redraw on no change possible
+        if ((this.prms.angularSpeed === 0) && !this.needDraw) return;
+
+        this.needDraw = false;
         this.currentAngleStep = this.currentAngleStep + this.prms.angularSpeed;
         this.currentAngle = (this.currentAngle + this.prms.angularSpeed) % (2 * Math.PI);
         this.ctxPaper.save();
@@ -66,7 +75,6 @@ export class Spirograph {
         const initialcX = this.prms.dimensions.innerCircleRadius - outterCircleRadius + this.prms.dimensions.lineWidth;
         const initialcY = 0;
         this.beta = this.currentAngleStep * this.prms.dimensions.innerCircleRadius / outterCircleRadius;
-        // console.log((new Date()).getTime(), points.length)
 
         this.o = rotatePoint({ x: initialcX, y: initialcY }, this.beta);
 
@@ -90,9 +98,9 @@ export class Spirograph {
             this.points.forEach((point) => this.drawPoint(point));
         }
 
+        console.log(this.sequenceIndex)
         this.ctxPaper.restore();
         this.step++;
-        setTimeout(() => this.window.requestAnimationFrame(this.draw.bind(this)), this.prms.drawPeriod)
     }
 
     private clear() {
@@ -100,8 +108,13 @@ export class Spirograph {
     }
 
     private deleteLastSeq() {
-        this.points = this.points.filter(p => p.seq !== this.lastSeq);
-        this.lastSeq--;
+        if (this.inking) {
+            console.warn('cannot undo while inking, stop circle before undoing')
+            return
+        }
+        const seqId = this.sequenceIndex.pop()
+        this.points = this.points.filter(p => p.seq !== seqId);
+        this.needDraw = true;
     }
 
     // position du stylo
@@ -147,7 +160,7 @@ export class Spirograph {
 
     private start() { this.inking = true; }
     private stop() { this.inking = false; }
-    private stopCircle() { this.prms.angularSpeed = 0; }
+    private stopCircle() { this.prms.angularSpeed = 0; this.inking = false; }
 
     private drawLine(a: Dot, b: Dot) {
         this.ctxPaper.beginPath();
@@ -177,6 +190,7 @@ export class Spirograph {
             this.prms.penPosition = this.asInnerCircleCoordinates(p)
         }
         this.lastSeq++;
+        this.sequenceIndex.push(this.lastSeq);
     }
 
     private asInnerCircleCoordinates(p: IPoint) {
@@ -213,7 +227,6 @@ export class Spirograph {
     }
 
     public toggleGrid(): void {
-        console.log('hoho', this.prms.showGrid)
         this.prms.showGrid = !this.prms.showGrid
         this.createFixedElements()
     }
