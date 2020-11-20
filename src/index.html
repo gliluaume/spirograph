@@ -11,13 +11,13 @@
   <div class="inline">
     <form>
       <label for="angular-speed">Vitesse</label>
-      <input id="angular-speed" type="number" placeholder="vitesse angulaire">
+      <input id="angular-speed" type="number" max="30" min="-30" step="5" placeholder="vitesse angulaire">
       <label for="color">Couleur</label>
       <input id="color" type="color" placeholder="couleur">
       <label for="lineWidth">Epaisseur</label>
       <input id="lineWidth" type="number" max="50" min="1" placeholder="épaisseur de trait">
       <label for="radius">Rayon</label>
-      <input id="radius" type="number" max="200" min="1" placeholder="rayon">
+      <input id="radius" type="number" min="1" step="10" placeholder="rayon">
       <button id="toggleGrid" type="button">change grille</button>
 
       <button id="start" type="button">démarrer</button>

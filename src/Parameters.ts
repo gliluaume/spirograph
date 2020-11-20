@@ -63,6 +63,7 @@ export class Dimensions {
     public circleColor: string
     public innerCircleColor: string
     public innerCircleRadius: number
+    public innerCircleMaxRadius: number
 
     constructor() {
         const init = Math.min(window.innerHeight, window.innerWidth) - 20;
@@ -73,5 +74,6 @@ export class Dimensions {
         this.circleColor = '#325FA2'
         this.innerCircleColor = '#995FA2'
         this.innerCircleRadius = Math.round(this.outterCircleRadius / 5)
+        this.innerCircleMaxRadius = this.outterCircleRadius - 10
     }
 }

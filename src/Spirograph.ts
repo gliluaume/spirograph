@@ -2,11 +2,25 @@
 import { IPoint, isInCircle, oppPoint, rotatePoint, translatePoint, o, eq } from "./geometry"
 import { Dot, EStyle, Parameters } from "./Parameters"
 
+type voidFn = () => void;
+export interface ISpirographParameters extends Parameters{
+    toggleGrid: voidFn
+    start: voidFn
+    stop: voidFn
+    stopCircle: voidFn
+    clear: voidFn
+    undo: voidFn
+    save: voidFn
+}
+
+export interface IWindowWithSpirograph  extends Window {
+    spirographParameters: ISpirographParameters
+}
 
 export class Spirograph {
     private window: any
-    private ctxPaper: any
-    private ctxInnerCircle: any
+    private ctxPaper: CanvasRenderingContext2D
+    private ctxInnerCircle: CanvasRenderingContext2D
 
     // currentAngle (=alpha) est l'angle de rotation du cercle interne
     // quand le cercle interne tourne de alpha, on considère qu'il roule sur le bord intérieur
@@ -98,7 +112,6 @@ export class Spirograph {
             this.points.forEach((point) => this.drawPoint(point));
         }
 
-        console.log(this.sequenceIndex)
         this.ctxPaper.restore();
         this.step++;
     }
@@ -220,8 +233,8 @@ export class Spirograph {
     }
 
     public save(): void {
-        const canvas = document.getElementById('paper') as any;
-        const imageDl = document.getElementById('canvasImgDl') as any;
+        const canvas = document.getElementById('paper') as HTMLCanvasElement;
+        const imageDl = document.getElementById('canvasImgDl') as HTMLLinkElement;
         imageDl.href = canvas.toDataURL();
         document.getElementById('canvasImgDl').click()
     }
@@ -234,14 +247,21 @@ export class Spirograph {
     public link(): void {
         // on fait une interface avec l'extérieur
         this.window.requestAnimationFrame(this.draw.bind(this));
-        this.window.pottingWheelPrms = this.prms;
-        this.window.pottingWheelPrms.toggleGrid = this.toggleGrid.bind(this);
-        this.window.pottingWheelPrms.start = this.start.bind(this);
-        this.window.pottingWheelPrms.stop = this.stop.bind(this);
-        this.window.pottingWheelPrms.stopCircle = this.stopCircle.bind(this);
-        this.window.pottingWheelPrms.clear = this.clear.bind(this);
-        this.window.pottingWheelPrms.undo = this.deleteLastSeq.bind(this);
-        this.window.pottingWheelPrms.save = this.save.bind(this);
+        this.window.spirographParameters = this.prms;
+        this.window.spirographParameters.toggleGrid = this.toggleGrid.bind(this);
+        this.window.spirographParameters.start = this.start.bind(this);
+        this.window.spirographParameters.stop = this.stop.bind(this);
+        this.window.spirographParameters.stopCircle = this.stopCircle.bind(this);
+        this.window.spirographParameters.clear = this.clear.bind(this);
+        this.window.spirographParameters.undo = this.deleteLastSeq.bind(this);
+        this.window.spirographParameters.save = this.save.bind(this);
+        Object.defineProperty(this.window.spirographParameters, 'fixedCircleRadius', {
+            get: () => this.prms.dimensions.innerCircleRadius,
+            set: (value) => {
+                this.prms.dimensions.innerCircleRadius = value
+                this.needDraw = true
+            }
+        });
     }
 
     public createLayers(): void {
@@ -271,14 +291,14 @@ export class Spirograph {
         this.ctxInnerCircle = this.get2dContext('innerCircle');
     }
 
-    private get2dContext(eltId: string): void {
-        return (document.getElementById(eltId) as any).getContext('2d');
+    private get2dContext(eltId: string): CanvasRenderingContext2D {
+        return (document.getElementById(eltId) as HTMLCanvasElement).getContext('2d');
     }
 
 
     private createFixedElements() {
-        const elt = document.getElementById('fixed')
-        const context = (elt as any).getContext('2d');
+        const elt = document.getElementById('fixed') as HTMLCanvasElement
+        const context = elt.getContext('2d');
         context.save();
         context.clearRect(0, 0, this.prms.dimensions.squareSize, this.prms.dimensions.squareSize);
         context.translate(this.O.x, this.O.y);
