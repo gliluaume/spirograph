@@ -258,6 +258,8 @@ export class Spirograph {
         this.window.spirographParameters.clear = this.clear.bind(this);
         this.window.spirographParameters.undo = this.deleteLastSeq.bind(this);
         this.window.spirographParameters.save = this.save.bind(this);
+
+
         Object.defineProperty(this.window.spirographParameters, 'mobileCircleRadius', {
             get: () => this.prms.dimensions.mobileCircleRadius,
             set: (value) => {
@@ -266,11 +268,11 @@ export class Spirograph {
             }
         });
 
-        Object.defineProperty(this.window.spirographParameters, 'withGrid', {
-            get: () => this.prms.showGrid,
+        Object.defineProperty(this.window.spirographParameters, 'fixedCircleRadius', {
+            get: () => this.prms.dimensions.fixedCircleRadius,
             set: (value) => {
-                console.log('hola', value)
-                this.prms.showGrid = value
+                this.prms.dimensions.fixedCircleRadius = value
+                this.createFixedElements()
                 this.needDraw = true
             }
         });

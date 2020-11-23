@@ -46,6 +46,7 @@ export const bind = (win: Window) => {
         mapInput('color', 'point.color')
         mapInput('lineWidth', 'point.lineWidth')
         mapInput('radius', 'mobileCircleRadius')
+        mapInput('radiusFixed', 'fixedCircleRadius')
 
         function mapInput(idHtml: string, property: string) { //, type: inputType = 'string') {
             const inputElt = document.getElementById(idHtml) as HTMLInputElement
