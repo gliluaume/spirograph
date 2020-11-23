@@ -11,6 +11,7 @@ export interface ISpirographParameters extends Parameters{
     clear: voidFn
     undo: voidFn
     save: voidFn
+    mobileCircleRadius: number
 }
 
 export interface IWindowWithSpirograph  extends Window {
@@ -255,10 +256,19 @@ export class Spirograph {
         this.window.spirographParameters.clear = this.clear.bind(this);
         this.window.spirographParameters.undo = this.deleteLastSeq.bind(this);
         this.window.spirographParameters.save = this.save.bind(this);
-        Object.defineProperty(this.window.spirographParameters, 'fixedCircleRadius', {
+        Object.defineProperty(this.window.spirographParameters, 'mobileCircleRadius', {
             get: () => this.prms.dimensions.innerCircleRadius,
             set: (value) => {
                 this.prms.dimensions.innerCircleRadius = value
+                this.needDraw = true
+            }
+        });
+
+        Object.defineProperty(this.window.spirographParameters, 'withGrid', {
+            get: () => this.prms.showGrid,
+            set: (value) => {
+                console.log('hola', value)
+                this.prms.showGrid = value
                 this.needDraw = true
             }
         });

@@ -25,7 +25,7 @@ export class Parameters {
         this.point = new Dot()
         this.dimensions = new Dimensions()
         this.style = EStyle.line
-        this.showGrid = true
+        this.showGrid = false
     }
 }
 export class Dot implements IPoint {
