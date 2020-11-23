@@ -59,21 +59,21 @@ export class Dimensions {
     public squareSize: number
     public scaleFactor: number
     public lineWidth: number
-    public outterCircleRadius: number
+    public fixedCircleRadius: number
     public circleColor: string
-    public innerCircleColor: string
-    public innerCircleRadius: number
-    public innerCircleMaxRadius: number
+    public mobileCircleColor: string
+    public mobileCircleRadius: number
+    public mobileCircleMaxRadius: number
 
     constructor() {
         const init = Math.min(window.innerHeight, window.innerWidth) - 20;
         this.squareSize = init
         this.scaleFactor = 1
         this.lineWidth = 2
-        this.outterCircleRadius = Math.round((init)/2) - 10
+        this.fixedCircleRadius = Math.round((init)/2) - 10
         this.circleColor = '#325FA2'
-        this.innerCircleColor = '#995FA2'
-        this.innerCircleRadius = Math.round(this.outterCircleRadius / 5)
-        this.innerCircleMaxRadius = this.outterCircleRadius - 10
+        this.mobileCircleColor = '#995FA2'
+        this.mobileCircleRadius = Math.round(this.fixedCircleRadius / 5)
+        this.mobileCircleMaxRadius = this.fixedCircleRadius - 10
     }
 }

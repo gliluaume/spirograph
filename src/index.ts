@@ -57,9 +57,9 @@ export const bind = (win: Window) => {
                 set(window.spirographParameters, property, event.target.value)
             });
         }
-        console.log(window.spirographParameters.dimensions.outterCircleRadius)
+        console.log(window.spirographParameters.dimensions.fixedCircleRadius)
         document.getElementById('radius')
-            .setAttribute('max', window.spirographParameters.dimensions.innerCircleMaxRadius.toString())
+            .setAttribute('max', window.spirographParameters.dimensions.mobileCircleMaxRadius.toString())
 
         type actionTypes = 'start' | 'stop' | 'stopCircle' | 'clear' | 'undo' | 'save' | 'toggleGrid';
         mapAction('start', 'start');
@@ -88,7 +88,7 @@ export const bind = (win: Window) => {
             document.getElementById(`size${key}`)
                 .addEventListener('click', (event: any) => {
                     window.spirographParameters.mobileCircleRadius = Math.floor(
-                        window.spirographParameters.dimensions.outterCircleRadius * window.radiusPreselect[key] as unknown as any)
+                        window.spirographParameters.dimensions.fixedCircleRadius * window.radiusPreselect[key] as unknown as any)
                 });
         })
 

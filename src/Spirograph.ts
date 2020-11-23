@@ -3,7 +3,7 @@ import { IPoint, isInCircle, oppPoint, rotatePoint, translatePoint, o, eq } from
 import { Dot, EStyle, Parameters } from "./Parameters"
 
 type voidFn = () => void;
-export interface ISpirographParameters extends Parameters{
+export interface ISpirographParameters extends Parameters {
     toggleGrid: voidFn
     start: voidFn
     stop: voidFn
@@ -14,7 +14,7 @@ export interface ISpirographParameters extends Parameters{
     mobileCircleRadius: number
 }
 
-export interface IWindowWithSpirograph  extends Window {
+export interface IWindowWithSpirograph extends Window {
     spirographParameters: ISpirographParameters
 }
 
@@ -60,10 +60,10 @@ export class Spirograph {
             x: this.prms.dimensions.squareSize / 2,
             y: this.prms.dimensions.squareSize / 2,
         }
-        this.sequenceIndex = []
+        this.sequenceIndex = [this.lastSeq]
         // TODO refactor cf this.o in draw
         this.originalPenPosition = {
-            x: this.prms.dimensions.innerCircleRadius - this.prms.dimensions.outterCircleRadius + this.prms.dimensions.lineWidth,
+            x: this.prms.dimensions.mobileCircleRadius - this.prms.dimensions.fixedCircleRadius + this.prms.dimensions.lineWidth,
             y: 0,
         }
     }
@@ -83,13 +83,13 @@ export class Spirograph {
         this.ctxPaper.scale(this.prms.dimensions.scaleFactor, this.prms.dimensions.scaleFactor);
 
         this.ctxPaper.lineWidth = this.prms.dimensions.lineWidth;
-        const outterCircleRadius = this.prms.dimensions.outterCircleRadius;
+        const outterCircleRadius = this.prms.dimensions.fixedCircleRadius;
 
         // inner Circle
         // initial (x, y) = o, center of c
-        const initialcX = this.prms.dimensions.innerCircleRadius - outterCircleRadius + this.prms.dimensions.lineWidth;
+        const initialcX = this.prms.dimensions.mobileCircleRadius - outterCircleRadius + this.prms.dimensions.lineWidth;
         const initialcY = 0;
-        this.beta = this.currentAngleStep * this.prms.dimensions.innerCircleRadius / outterCircleRadius;
+        this.beta = this.currentAngleStep * this.prms.dimensions.mobileCircleRadius / outterCircleRadius;
 
         this.o = rotatePoint({ x: initialcX, y: initialcY }, this.beta);
 
@@ -119,6 +119,7 @@ export class Spirograph {
 
     private clear() {
         this.points = [];
+        this.needDraw = true;
     }
 
     private deleteLastSeq() {
@@ -127,6 +128,7 @@ export class Spirograph {
             return
         }
         const seqId = this.sequenceIndex.pop()
+        console.log(seqId, this.points)
         this.points = this.points.filter(p => p.seq !== seqId);
         this.needDraw = true;
     }
@@ -142,20 +144,20 @@ export class Spirograph {
         this.ctxInnerCircle.translate(this.O.x, this.O.y);
         this.ctxInnerCircle.scale(this.prms.dimensions.scaleFactor, this.prms.dimensions.scaleFactor);
 
-        this.ctxInnerCircle.strokeStyle = this.prms.dimensions.innerCircleColor;
+        this.ctxInnerCircle.strokeStyle = this.prms.dimensions.mobileCircleColor;
 
         // a grid
         const verticalStart = translatePoint(
-            rotatePoint({ x: 0, y: -this.prms.dimensions.innerCircleRadius }, -alpha),
+            rotatePoint({ x: 0, y: -this.prms.dimensions.mobileCircleRadius }, -alpha),
             point);
         const verticalEnd = translatePoint(
-            rotatePoint({ x: 0, y: this.prms.dimensions.innerCircleRadius }, -alpha),
+            rotatePoint({ x: 0, y: this.prms.dimensions.mobileCircleRadius }, -alpha),
             point);
         const horizontalStart = translatePoint(
-            rotatePoint({ x: -this.prms.dimensions.innerCircleRadius, y: 0 }, -alpha),
+            rotatePoint({ x: -this.prms.dimensions.mobileCircleRadius, y: 0 }, -alpha),
             point);
         const horizontalEnd = translatePoint(
-            rotatePoint({ x: this.prms.dimensions.innerCircleRadius, y: 0 }, -alpha),
+            rotatePoint({ x: this.prms.dimensions.mobileCircleRadius, y: 0 }, -alpha),
             point);
 
         this.ctxInnerCircle.beginPath();
@@ -166,7 +168,7 @@ export class Spirograph {
         this.ctxInnerCircle.stroke();
 
         this.ctxInnerCircle.beginPath();
-        this.ctxInnerCircle.arc(point.x, point.y, this.prms.dimensions.innerCircleRadius, 0, Math.PI * 2, true);
+        this.ctxInnerCircle.arc(point.x, point.y, this.prms.dimensions.mobileCircleRadius, 0, Math.PI * 2, true);
         this.ctxInnerCircle.stroke();
 
         this.ctxInnerCircle.restore();
@@ -220,7 +222,7 @@ export class Spirograph {
     }
 
     private isInInnerCircle(p: IPoint) {
-        return isInCircle(p, { center: this.o, radius: this.prms.dimensions.innerCircleRadius })
+        return isInCircle(p, { center: this.o, radius: this.prms.dimensions.mobileCircleRadius })
     }
 
     private addPoint(p: IPoint) {
@@ -257,9 +259,9 @@ export class Spirograph {
         this.window.spirographParameters.undo = this.deleteLastSeq.bind(this);
         this.window.spirographParameters.save = this.save.bind(this);
         Object.defineProperty(this.window.spirographParameters, 'mobileCircleRadius', {
-            get: () => this.prms.dimensions.innerCircleRadius,
+            get: () => this.prms.dimensions.mobileCircleRadius,
             set: (value) => {
-                this.prms.dimensions.innerCircleRadius = value
+                this.prms.dimensions.mobileCircleRadius = value
                 this.needDraw = true
             }
         });
@@ -331,7 +333,7 @@ export class Spirograph {
         // draw external circle
         context.strokeStyle = this.prms.dimensions.circleColor;
         context.lineWidth = this.prms.dimensions.lineWidth;
-        const outterCircleRadius = this.prms.dimensions.outterCircleRadius;
+        const outterCircleRadius = this.prms.dimensions.fixedCircleRadius;
         context.beginPath();
         context.strokeStyle = this.prms.dimensions.circleColor;
         context.arc(0, 0, outterCircleRadius, 0, Math.PI * 2, true);
