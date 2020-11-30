@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { IPoint, isInCircle, oppPoint, rotatePoint, translatePoint, o, eq } from "./geometry"
 import { Dot, EStyle, Parameters } from "./Parameters"
+import { Path } from "./Path";
 
 type voidFn = () => void;
 export interface ISpirographParameters extends Parameters {
@@ -12,6 +13,7 @@ export interface ISpirographParameters extends Parameters {
     undo: voidFn
     save: voidFn
     mobileCircleRadius: number
+    exportToSvg: voidFn
 }
 
 export interface IWindowWithSpirograph extends Window {
@@ -258,7 +260,7 @@ export class Spirograph {
         this.window.spirographParameters.clear = this.clear.bind(this);
         this.window.spirographParameters.undo = this.deleteLastSeq.bind(this);
         this.window.spirographParameters.save = this.save.bind(this);
-
+        this.window.spirographParameters.exportToSvg = this.exportToSvg.bind(this);
 
         Object.defineProperty(this.window.spirographParameters, 'mobileCircleRadius', {
             get: () => this.prms.dimensions.mobileCircleRadius,
@@ -309,7 +311,6 @@ export class Spirograph {
         return (document.getElementById(eltId) as HTMLCanvasElement).getContext('2d');
     }
 
-
     private createFixedElements() {
         const elt = document.getElementById('fixed') as HTMLCanvasElement
         const context = elt.getContext('2d');
@@ -341,5 +342,38 @@ export class Spirograph {
         context.arc(0, 0, outterCircleRadius, 0, Math.PI * 2, true);
         context.stroke();
         context.restore();
+    }
+
+    public exportToSvg(): void {
+        const paths = this.getSvgPaths()
+        console.log(paths)
+
+        const svg = document.createElement('svg')
+        paths.forEach(path => {
+            svg.appendChild(path.toSvg(document))
+        })
+
+        const serializer = new XMLSerializer();
+        let source = serializer.serializeToString(svg);
+        source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+        const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+
+        const a = document.getElementById('canvasSvgDl') as HTMLLinkElement
+        a.href = url;
+        a.click()
+    }
+
+    public getSvgPaths(): Path[] {
+        console.log(this.points)
+        return this.points.reduce((paths: Path[], dot: Dot) => {
+            const p = paths.find(path => path.matchDot(dot))
+            if (p) {
+                p.dots.push(dot)
+            } else {
+                const newPath = new Path(dot)
+                paths.push(newPath)
+            }
+            return paths
+        }, []) as unknown as Path[]
     }
 }

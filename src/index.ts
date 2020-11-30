@@ -62,7 +62,7 @@ export const bind = (win: Window) => {
         document.getElementById('radius')
             .setAttribute('max', window.spirographParameters.dimensions.mobileCircleMaxRadius.toString())
 
-        type actionTypes = 'start' | 'stop' | 'stopCircle' | 'clear' | 'undo' | 'save' | 'toggleGrid';
+        type actionTypes = 'start' | 'stop' | 'stopCircle' | 'clear' | 'undo' | 'save' | 'toggleGrid' | 'exportToSvg';
         mapAction('start', 'start');
         mapAction('stop', 'stop');
         mapAction('stop-circle', 'stopCircle');
@@ -70,6 +70,7 @@ export const bind = (win: Window) => {
         mapAction('undo', 'undo');
         mapAction('save', 'save');
         mapAction('toggleGrid', 'toggleGrid');
+        mapAction('exportToSvg', 'exportToSvg');
 
         function mapAction(idHtml: string, actionName: actionTypes) {
             document.getElementById(idHtml)
