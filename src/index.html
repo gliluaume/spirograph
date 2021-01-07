@@ -3,13 +3,14 @@
 <head>
   <title>Spirograph</title>
   <link rel="stylesheet" href="app.css" data-no-instant="">
+  <link rel="stylesheet" href="style.css" data-no-instant="">
 </head>
 <body>
   <div class="inline">
     <div id="container"></div>
   </div>
   <div class="inline">
-    <form>
+    <form xclass="gold">
       <label for="angular-speed">Vitesse</label>
       <input id="angular-speed" type="number" max="30" min="-30" step="5" placeholder="vitesse angulaire">
       <label for="color">Couleur</label>
@@ -20,14 +21,14 @@
       <input id="radius" type="number" min="1" step="10" placeholder="rayon">
       <label for="radiusFixed">Rayon cercle fixe</label>
       <input id="radiusFixed" type="number" min="30" step="10" placeholder="rayon">
-      <button id="toggleGrid" type="button">change grille</button>
+      <button class="gold" id="toggleGrid" type="button">grille</button>
 
-      <button id="start" type="button">démarrer</button>
-      <button id="stop" type="button">arrêter</button>
-      <button id="stop-circle" type="button">arrêter le cercle</button>
-      <button id="undo" type="button">défaire</button>
-      <button id="clear" type="button">tout effacer</button>
-      <button id="save" type="button">sauvegarder</button>
+      <button class="gold" id="start" type="button">démarrer</button>
+      <button class="gold" id="stop" type="button">arrêter</button>
+      <button class="gold" id="stop-circle" type="button">arrêter le cercle</button>
+      <button class="gold" id="undo" type="button">défaire</button>
+      <button class="gold" id="clear" type="button">tout effacer</button>
+      <button class="gold" id="save" type="button">sauvegarder</button>
 
       <div id="sizes">
         <svg width="200" height="250" version="1.1" xmlns="http://www.w3.org/2000/svg">
