@@ -1,6 +1,9 @@
 import { IWindowWithSpirograph, Spirograph } from "./Spirograph";
 import { get, set } from 'lodash'
-
+import 'art-deco/style.css'
+import 'art-deco/slider.css'
+import 'art-deco/dropdown.css'
+import 'art-deco/roller.js'
 interface ISpiroWin extends IWindowWithSpirograph {
     setRadius: (r: number) => void,
     radiusPreselect: RadiusPreSizes
@@ -51,21 +54,39 @@ export const bind = (win: Window) => {
         function mapInput(idHtml: string, property: string) { //, type: inputType = 'string') {
             const inputElt = document.getElementById(idHtml) as HTMLInputElement
             inputElt.value = get(window.spirographParameters, property)
-            console.log(property, get(window.spirographParameters, property))
             inputElt.addEventListener('change', (event: any) => {
                 // const value = convMap[type](event.target.value)
                 // set(window.spirographParameters, property, value)
                 set(window.spirographParameters, property, event.target.value)
             });
         }
-        console.log(window.spirographParameters.dimensions.fixedCircleRadius)
+
         document.getElementById('radius')
             .setAttribute('max', window.spirographParameters.dimensions.mobileCircleMaxRadius.toString())
 
-        type actionTypes = 'start' | 'stop' | 'stopCircle' | 'clear' | 'undo' | 'save' | 'toggleGrid';
-        mapAction('start', 'start');
-        mapAction('stop', 'stop');
-        mapAction('stop-circle', 'stopCircle');
+
+        // start-stop pen
+        document.getElementById('pen')
+        .addEventListener('click', (event) => {
+            if ((event.target as any).checked) window.spirographParameters.start();
+            else window.spirographParameters.stop();
+        });
+
+        document.getElementById('circle')
+        .addEventListener('click', (event) => {
+            if ((event.target as any).checked) {
+                const speed = (document.getElementById('angular-speed') as any).value
+                window.spirographParameters.angularSpeed = speed / 100;
+            } else {
+                window.spirographParameters.angularSpeed = 0;
+            }
+        });
+
+        // type actionTypes = 'start' | 'stop' | 'stopCircle' | 'clear' | 'undo' | 'save' | 'toggleGrid';
+        type actionTypes = 'clear' | 'undo' | 'save' | 'toggleGrid';
+        // mapAction('start', 'start');
+        // mapAction('stop', 'stop');
+        // mapAction('stop-circle', 'stopCircle');
         mapAction('clear', 'clear');
         mapAction('undo', 'undo');
         mapAction('save', 'save');

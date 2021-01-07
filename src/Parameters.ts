@@ -55,6 +55,8 @@ export class Dot implements IPoint {
     }
 }
 
+// TODO clean way of padding
+const CSS_OFFSET = 14 * 20;
 export class Dimensions {
     public squareSize: number
     public scaleFactor: number
@@ -66,7 +68,7 @@ export class Dimensions {
     public mobileCircleMaxRadius: number
 
     constructor() {
-        const init = Math.min(window.innerHeight, window.innerWidth) - 20;
+        const init = Math.min(window.innerHeight, window.innerWidth) - 20 - CSS_OFFSET;
         this.squareSize = init
         this.scaleFactor = 1
         this.lineWidth = 2

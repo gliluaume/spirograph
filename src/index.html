@@ -1,47 +1,184 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Spirograph</title>
-  <link rel="stylesheet" href="app.css" data-no-instant="">
-</head>
-<body>
-  <div class="inline">
-    <div id="container"></div>
-  </div>
-  <div class="inline">
-    <form>
-      <label for="angular-speed">Vitesse</label>
-      <input id="angular-speed" type="number" max="30" min="-30" step="5" placeholder="vitesse angulaire">
-      <label for="color">Couleur</label>
-      <input id="color" type="color" placeholder="couleur">
-      <label for="lineWidth">Epaisseur</label>
-      <input id="lineWidth" type="number" max="50" min="1" placeholder="épaisseur de trait">
-      <label for="radius">Rayon cercle mobile</label>
-      <input id="radius" type="number" min="1" step="10" placeholder="rayon">
-      <label for="radiusFixed">Rayon cercle fixe</label>
-      <input id="radiusFixed" type="number" min="30" step="10" placeholder="rayon">
-      <button id="toggleGrid" type="button">change grille</button>
+  <head>
+    <title>Spirograph</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link rel="stylesheet" href="app.css" data-no-instant="" />
+    <!-- <link rel="stylesheet" href="https://github.com/gliluaume/art-deco/blob/master/style.css" >
+  <link rel="stylesheet" href="https://github.com/gliluaume/art-deco/blob/master/slider.css" >
+  <link rel="stylesheet" href="https://github.com/gliluaume/art-deco/blob/master/dropdown.css" > -->
+    <!-- <link rel="stylesheet" href="art-deco/style.css" data-no-instant="">
+  <link rel="stylesheet" href="art-deco/dropdown.css" data-no-instant=""> -->
+    <link rel="stylesheet" href="app.css" data-no-instant="" />
+  </head>
+  <body class="frame">
+    <div class="inline">
+      <div id="container"></div>
+    </div>
+    <div class="inline">
+      <form xclass="gold">
+        <label for="angular-speed">Vitesse</label>
+        <input
+          id="angular-speed"
+          type="range"
+          max="30"
+          min="-30"
+          step="5"
+          placeholder="vitesse angulaire"
+        />
+        <label for="color">Couleur</label>
+        <input id="color" type="color" placeholder="couleur" />
+        <label for="lineWidth">Epaisseur</label>
+        <input
+          id="lineWidth"
+          type="range"
+          max="50"
+          min="1"
+          placeholder="épaisseur de trait"
+        />
+        <label for="radius">Rayon cercle mobile</label>
+        <input id="radius" type="range" min="1" step="10" placeholder="rayon" />
 
-      <button id="start" type="button">démarrer</button>
-      <button id="stop" type="button">arrêter</button>
-      <button id="stop-circle" type="button">arrêter le cercle</button>
-      <button id="undo" type="button">défaire</button>
-      <button id="clear" type="button">tout effacer</button>
-      <button id="save" type="button">sauvegarder</button>
+        <label for="radiusFixed">Rayon cercle fixe</label>
+        <input
+          type="range"
+          id="radiusFixed"
+          min="30"
+          max="300"
+          value="50"
+          step="10"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="50"
+        />
 
-      <div id="sizes">
-        <svg width="200" height="250" version="1.1" xmlns="http://www.w3.org/2000/svg">
-          <circle id="sizeXS" cx="20" cy="40" r="10" stroke="black" fill="grey" stroke-width="2"/>
-          <circle id="sizeS" cx="60" cy="40" r="15" stroke="black" fill="grey" stroke-width="2"/>
-          <circle id="sizeM" cx="110" cy="40" r="20" stroke="black" fill="grey" stroke-width="2"/>
-          <circle id="sizeL" cx="173" cy="40" r="25" stroke="black" fill="grey" stroke-width="2"/>
-        </svg>
-      </div>
+        <select class="roller-selector" name="theme" id="theme-select">
+          <option value="red">Red</option>
+          <option value="green">Green</option>
+          <option value="blue">Blue</option>
+          <option value="white">White</option>
+          <option value="black">Black</option>
+        </select>
 
-      <a id="canvasImgDl" href="x" download="export.png" style="visibility: collapse"></a>
+        <!-- grid on/off -->
+        <div style="display: flex">
+          <div style="margin-right: 1em">
+            <input id="toggleGrid" type="checkbox" class="switch" />
+            <label for="toggleGrid">
+              <i class="fa fa-plus-square-o"></i>
+            </label>
+          </div>
+          <!-- pen on/off -->
+          <div style="margin-right: 1em">
+            <input id="pen" type="checkbox" class="switch" />
+            <label for="pen">
+              <i class="fa fa-pencil"></i>
+            </label>
+          </div>
+          <!-- circle on/off -->
+          <div>
+            <input id="circle" type="checkbox" class="switch" checked />
+            <label for="circle">
+              <i class="fa fa-pause"></i>
+            </label>
+          </div>
+        </div>
 
-    </form>
-  </div>
-  <script src="index.ts"></script>
-</body>
+        <!-- défaire -->
+        <button class="gold" id="undo" type="button">
+          <span class="fa fa-undo fa-2x"></span>
+        </button>
+        <!-- tout effacer -->
+        <button class="gold" id="clear" type="button">
+          <span class="fa fa-trash-o fa-2x"></span>
+        </button>
+        <!-- sauvegarder -->
+        <button class="gold" id="save" type="button">
+          <span class="fa fa-floppy-o fa-2x"></span>
+        </button>
+
+        <div id="sizes">
+          <svg
+            width="200"
+            height="250"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              id="sizeXS"
+              cx="20"
+              cy="40"
+              r="10"
+              stroke="black"
+              fill="grey"
+              stroke-width="2"
+            />
+            <circle
+              id="sizeS"
+              cx="60"
+              cy="40"
+              r="15"
+              stroke="black"
+              fill="grey"
+              stroke-width="2"
+            />
+            <circle
+              id="sizeM"
+              cx="110"
+              cy="40"
+              r="20"
+              stroke="black"
+              fill="grey"
+              stroke-width="2"
+            />
+            <circle
+              id="sizeL"
+              cx="173"
+              cy="40"
+              r="25"
+              stroke="black"
+              fill="grey"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+
+        <div id="other-sizes">
+          <div class="other"></div>
+          <div class="gear-small"></div>
+          <div class="gear-medium"></div>
+          <div class="gear-large"></div>
+          <label>hola</label>
+        </div>
+
+        <a
+          id="canvasImgDl"
+          href="x"
+          download="export.png"
+          style="visibility: collapse"
+        ></a>
+      </form>
+    </div>
+    <script src="index.ts"></script>
+    <script>
+      function switchTheme(theme) {
+        return function (e) {
+          document.documentElement.setAttribute("data-theme", theme);
+        };
+      }
+
+      document.querySelector("#theme-select").addEventListener(
+        "change",
+        (e) => {
+          switchTheme(e.target.value)();
+        },
+        false
+      );
+
+      switchTheme("green")();
+    </script>
+  </body>
 </html>
