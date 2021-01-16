@@ -7,7 +7,7 @@ export interface ISpirographParameters extends Parameters {
     toggleGrid: voidFn
     start: voidFn
     stop: voidFn
-    stopCircle: voidFn
+    setSpeed: (v: number) => void
     clear: voidFn
     undo: voidFn
     save: voidFn
@@ -176,7 +176,10 @@ export class Spirograph {
 
     private start() { this.inking = true; }
     private stop() { this.inking = false; }
-    private stopCircle() { this.prms.angularSpeed = 0; this.inking = false; }
+    private setSpeed(angularSpeed: number) {
+        this.prms.angularSpeed = angularSpeed;
+        this.inking = false;
+    }
 
     private drawLine(a: Dot, b: Dot) {
         this.ctxPaper.beginPath();
@@ -254,7 +257,7 @@ export class Spirograph {
         this.window.spirographParameters.toggleGrid = this.toggleGrid.bind(this);
         this.window.spirographParameters.start = this.start.bind(this);
         this.window.spirographParameters.stop = this.stop.bind(this);
-        this.window.spirographParameters.stopCircle = this.stopCircle.bind(this);
+        this.window.spirographParameters.setSpeed = this.setSpeed.bind(this);
         this.window.spirographParameters.clear = this.clear.bind(this);
         this.window.spirographParameters.undo = this.deleteLastSeq.bind(this);
         this.window.spirographParameters.save = this.save.bind(this);

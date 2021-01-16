@@ -17,3 +17,16 @@ form {
 /* input, button {
   height: 3em;
 } */
+
+#container {
+  padding-right: 2em;
+  z-index: -100;
+}
+
+#fixed {
+  xbackground-color: rgb(235, 230, 217);
+  background-color: white;
+  border: 1px solid;
+  border-radius: 0.2em;
+  border-color: var(--gold-dark);
+}

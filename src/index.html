@@ -4,9 +4,10 @@
   <title>Spirograph</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
   <link rel="stylesheet" href="app.css" data-no-instant="">
-  <link rel="stylesheet" href="style.css" data-no-instant="">
+  <link rel="stylesheet" href="art-deco/style.css" data-no-instant="">
+  <link rel="stylesheet" href="art-deco/dropdown.css" data-no-instant="">
 </head>
-<body>
+<body class="frame">
   <div class="inline">
     <div id="container"></div>
   </div>
@@ -22,14 +23,25 @@
       <input id="radius" type="number" min="1" step="10" placeholder="rayon">
       <label for="radiusFixed">Rayon cercle fixe</label>
       <input id="radiusFixed" type="number" min="30" step="10" placeholder="rayon">
-      <!-- grille -->
-      <button class="gold" id="toggleGrid" type="button"><span class="fa fa-table fa-2x"></span></button>
-      <!-- démarrer -->
-      <button class="gold" id="start" type="button"><span class="fa fa-pencil-square-o fa-2x"></span></button>
-      <!-- arrêter -->
-      <button class="gold" id="stop" type="button"><span class="fa fa-pencil fa-2x"></span></button>
-      <!-- arrêter le cercle -->
-      <button class="gold" id="stop-circle" type="button">arrêter le cercle</button>
+
+      <!-- grid on/off -->
+      <div style="display: flex">
+        <div style="margin-right: 1em">
+            <input id="toggleGrid" type="checkbox" class="switch"/>
+            <label for="toggleGrid">Grid</label>
+        </div>
+        <!-- pen on/off -->
+        <div style="margin-right: 1em">
+          <input id="pen" type="checkbox" class="switch"/>
+          <label for="pen">Pen</label>
+        </div>
+        <!-- circle on/off -->
+        <div>
+          <input id="circle" type="checkbox" class="switch" checked/>
+          <label for="circle">Circle</label>
+        </div>
+      </div>
+
       <!-- défaire -->
       <button class="gold" id="undo" type="button"><span class="fa fa-undo fa-2x"></span></button>
       <!-- tout effacer -->
