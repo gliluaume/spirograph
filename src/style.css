@@ -157,8 +157,12 @@ i {
 
 #container {
   padding-right: 2em;
+  z-index: -100;
 }
 
-canvas {
-  background-color: white;
+#fixed {
+  background-color: rgb(235, 230, 217);
+  border: 1px solid;
+  border-radius: 0.2em;
+  border-color: var(--gold-dark);
 }

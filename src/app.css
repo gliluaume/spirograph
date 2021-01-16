@@ -6,6 +6,7 @@ canvas {
   cursor: crosshair;
   position: absolute;
 }
+
 form {
   display: grid;
 }

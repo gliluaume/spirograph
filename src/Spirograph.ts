@@ -320,7 +320,7 @@ export class Spirograph {
 
         // Debug: draw axis
         if (this.prms.showGrid) {
-            elt.style.border = '1px solid'
+            // elt.style.border = '1px solid'
             context.lineWidth = 1
             context.beginPath();
             context.moveTo(-this.prms.dimensions.squareSize, 0);
@@ -328,8 +328,8 @@ export class Spirograph {
             context.moveTo(0, -this.prms.dimensions.squareSize);
             context.lineTo(0, this.prms.dimensions.squareSize);
             context.stroke();
-        } else {
-            elt.style.border = '0px solid'
+        // } else {
+        //     elt.style.border = '0px solid'
         }
 
         // draw external circle

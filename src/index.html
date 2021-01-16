@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Spirograph</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
   <link rel="stylesheet" href="app.css" data-no-instant="">
   <link rel="stylesheet" href="style.css" data-no-instant="">
 </head>
@@ -21,14 +22,20 @@
       <input id="radius" type="number" min="1" step="10" placeholder="rayon">
       <label for="radiusFixed">Rayon cercle fixe</label>
       <input id="radiusFixed" type="number" min="30" step="10" placeholder="rayon">
-      <button class="gold" id="toggleGrid" type="button">grille</button>
-
-      <button class="gold" id="start" type="button">démarrer</button>
-      <button class="gold" id="stop" type="button">arrêter</button>
+      <!-- grille -->
+      <button class="gold" id="toggleGrid" type="button"><span class="fa fa-table fa-2x"></span></button>
+      <!-- démarrer -->
+      <button class="gold" id="start" type="button"><span class="fa fa-pencil-square-o fa-2x"></span></button>
+      <!-- arrêter -->
+      <button class="gold" id="stop" type="button"><span class="fa fa-pencil fa-2x"></span></button>
+      <!-- arrêter le cercle -->
       <button class="gold" id="stop-circle" type="button">arrêter le cercle</button>
-      <button class="gold" id="undo" type="button">défaire</button>
-      <button class="gold" id="clear" type="button">tout effacer</button>
-      <button class="gold" id="save" type="button">sauvegarder</button>
+      <!-- défaire -->
+      <button class="gold" id="undo" type="button"><span class="fa fa-undo fa-2x"></span></button>
+      <!-- tout effacer -->
+      <button class="gold" id="clear" type="button"><span class="fa fa-trash-o fa-2x"></span></button>
+      <!-- sauvegarder -->
+      <button class="gold" id="save" type="button"><span class="fa fa-floppy-o fa-2x"></span></button>
 
       <div id="sizes">
         <svg width="200" height="250" version="1.1" xmlns="http://www.w3.org/2000/svg">
