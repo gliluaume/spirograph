@@ -2,14 +2,16 @@
   --thin-bar: 0.07em;
   --medium-bar: 0.15em;
   --creneau: 2em;
+  --gold-darker: #513d12;
   --gold-dark: #b38728;
   --gold-medium: #bf953f;
   --gold-light: #fcf6ba;
 
-  --bg-dark: #e8e8e8;
-  --bg-medium: #d7d7d7;
-  --bg-light: #ffffff;
-  --btn-hover: rgb(109, 75, 16);
+  --bg-dark: #0b1c30;
+  --bg-medium: #132f4e;
+  --bg-light: #235287;
+  --btn-hover: rgb(44, 31, 8);
+  --label-gold: #d0a144;
 }
 
 [data-theme="blue"] {
@@ -384,4 +386,15 @@ i {
 
 div > canvas {
   margin-right: 1em;
+}
+
+label {
+  margin-bottom: 0.2em;
+  color: var(--label-gold);
+  Xtext-shadow: 1px 1px 1px var(--gold-medium);
+}
+
+
+input {
+  margin-bottom: 0.7em;
 }
