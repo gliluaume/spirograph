@@ -41,9 +41,10 @@ export class Gear {
     public borders: Borders
 
     constructor() {
-        this.teeth = 20
-        this.teethAngle = Math.PI / 4
-        this.teethHeight = 10
+        this.teeth = 8
+        // Angle du sommet de la dent. La dent est un triangle isocèle
+        this.teethAngle = Math.PI / 8
+        this.teethHeight = 30
         this.radius = 0
     }
 
@@ -57,20 +58,42 @@ export class Gear {
         this.radius = edgeLength / Math.sin(innerAngle)
         const points = []
         const firstPoint = { x: 0, y: this.radius }
-        for (let i = 0; i < this.teeth; i++) {
-            console.log(innerAngle * i)
-            points.push(rotatePoint(firstPoint, innerAngle * i))
-        }
-        points.push(points[0])
+        const toothApex = translatePoint(firstPoint, { x: edgeLength / 2, y: this.teethHeight / 2})
 
-        return points.map(
+        // TODO: d'abord créer le triangle, puis le faire tourner
+
+
+        for (let i = 0; i < this.teeth; i++) {
+            points.push(rotatePoint(firstPoint, -innerAngle * i))
+            points.push(rotatePoint(toothApex, -innerAngle * i))
+        }
+
+        points.push(points[0])
+        console.log(points)
+
+         return points.map(
             p => translatePoint(p, { x: 4 * this.radius, y: 4 * this.radius })
         )
     }
 
-    public pointsToPath(points: IPoint[]): string {
+    private pointsToPath(points: IPoint[]): string {
+        return this.pointsToPathLinear(points)
+    }
+
+    // private pointsToPathBezier(points: IPoint[]): string {
+    //     this.borders = new Borders(points)
+
+    //     let path = `M ${points[0].x},${points[0].y}`
+    //     for(let i = 0; i < points.length - 1; i = i + 2) {
+    //         path = path + ` S ${points[i].x},${points[i].y} ${points[i+1].x},${points[i+1].y}`
+    //     }
+    //     const max = points.length - 1
+    //     path = path + ` S ${points[max].x},${points[max].y} ${points[0].x},${points[0].y}`
+    //     return path
+    // }
+
+    private pointsToPathLinear(points: IPoint[]): string {
         this.borders = new Borders(points)
-        console.log(this.borders)
         return points.map(
             (point, index) => {
                 return (index === 0)
@@ -83,7 +106,7 @@ export class Gear {
     public svg(): SVGElement {
         const points = this.calc()
         const path = this.pointsToPath(points)
-        console.log('path', path)
+
         const ns = 'http://www.w3.org/2000/svg'
         const s = document.createElementNS(ns, 'svg')
         s.setAttribute('viewBox', this.borders.asString())
