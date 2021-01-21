@@ -41,28 +41,26 @@ export class Gear {
     public borders: Borders
 
     constructor() {
-        this.teeth = 8
+        this.teeth = 20
         // Angle du sommet de la dent. La dent est un triangle isocèle
-        this.teethAngle = Math.PI / 8
+        this.teethAngle = Math.PI / 4
         this.teethHeight = 30
         this.radius = 0
     }
 
     public calc(): IPoint[] {
         // on calcule un polygone régulier dont le nombre de côtés est this.teeth et la longueur du côté est edgeLength
-        const edgeLength = 2 * Math.sin(this.teethAngle) * this.teethHeight
+        const edgeLength = 2 * Math.tan(this.teethAngle / 2) * this.teethHeight
         // angle du triangle formé par le centre du polygone, et les deux points de la base de la dent de la roue (An et An+1)
         const innerAngle = 2 * Math.PI / this.teeth
         // rayon du cercle qui passe par tous les points de la base des dents (les Ai)
         // C'est aussi la longueur du côté du triangle décrit précédemment
-        this.radius = edgeLength / Math.sin(innerAngle)
+        this.radius = (edgeLength / 2) / Math.sin(innerAngle / 2)
         const points = []
-        const firstPoint = { x: 0, y: this.radius }
-        const toothApex = translatePoint(firstPoint, { x: edgeLength / 2, y: this.teethHeight / 2})
+        const firstPoint = rotatePoint({ x: 0, y: this.radius }, innerAngle / 2)
+        const toothApex = { x: edgeLength /2 -12, y: this.radius + this.teethHeight}
 
         // TODO: d'abord créer le triangle, puis le faire tourner
-
-
         for (let i = 0; i < this.teeth; i++) {
             points.push(rotatePoint(firstPoint, -innerAngle * i))
             points.push(rotatePoint(toothApex, -innerAngle * i))
