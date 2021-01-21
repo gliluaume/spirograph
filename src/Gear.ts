@@ -2,18 +2,14 @@ import { IPoint, rotatePoint, translatePoint } from "./geometry"
 
 export class Gear {
     public radius
-    public cx
-    public cy
     public teeth
     public teethHeight
     public teethAngle
 
     constructor() {
-        this.cx = 100
-        this.cy = 100
-        this.teeth = 4
+        this.teeth = 20
         this.teethAngle = Math.PI / 4
-        this.teethHeight = 40
+        this.teethHeight = 20
         this.radius = 0
     }
 
@@ -37,14 +33,14 @@ export class Gear {
         return points
     }
 
-    public pointsToPath(points) {
+    public pointsToPath(points: IPoint[]): string {
         // console.log(points)
         // const first = points[0]
         // let str = `M ${first.x},${first.y}`;
 
         return points
         // .map(p => ({ x: Math.round(p.x), y: Math.round(p.y) }))
-        .map(p => translatePoint(p, { x: this.cx, y: this.cy }))
+        .map(p => translatePoint(p, { x: 4 * this.radius, y: 4 * this.radius }))
         .map(
             (point, index) => {
                 return (index === 0)
@@ -53,17 +49,20 @@ export class Gear {
             }).join(' ')
     }
 
-    public svg() {
+    // PB: centrer la roue (le centre de la roue doit être fonction de sa taille)
+    public svg(): SVGElement {
         const points = this.calc()
         const path = this.pointsToPath(points)
         console.log('path', path)
         const ns = 'http://www.w3.org/2000/svg'
         const s = document.createElementNS(ns, 'svg')
-        s.setAttribute('viewBox', `0 0 ${2 * this.cx} ${2 * this.cy}`)
+        // s.setAttribute('viewBox', `0 0 ${5 * this.radius} ${5 * this.radius}`)
+        s.setAttribute('viewBox', `0 0 600 600`)
 
         const p = document.createElementNS(ns, 'path')
         p.setAttribute('fill', 'none')
         p.setAttribute('stroke', 'red')
+        p.setAttribute('stroke-width', '1px')
         p.setAttribute('d', path)
         // p.setAttribute('d', `M 70,135.3197264742181 L 13.431457505076196,102.65986323710905 L 13.431457505076189,37.34013676289097 L 69.99999999999999,4.680273525781914 L 126.56854249492379,37.34013676289093 L 126.56854249492383,102.659863237109 L 70,135.3197264742181`)
 
