@@ -39,15 +39,25 @@ export class Gear {
     public teethHeight
     public teethAngle
     public borders: Borders
+    public flattening
 
     constructor() {
-        this.teeth = 40
+        this.teeth = 80
+
         // Angle du sommet de la dent. La dent est un triangle isocèle
-        this.teethAngle = Math.PI / 4
-        this.teethHeight = 30
+        this.teethAngle = Math.PI / 2
+        this.teethHeight = 4
         this.radius = 0
+        this.flattening = 1
     }
 
+    /*
+        A tooth looks like this: (a-b doit être tangente à un cercle inscrit)
+              c ___ d                                                          /\
+               /   \        Flattening c'est ce qui décrit la zone plate      /  \
+              /     \       en comparaison avec le triangle suivant :        /    \
+       a ____/ b     \ a2                                                   /      \
+    */
     public calc(): IPoint[] {
         // on calcule un polygone régulier dont le nombre de côtés est this.teeth et la longueur du côté est edgeLength
         const edgeLength = 2 * Math.tan(this.teethAngle / 2) * this.teethHeight
@@ -61,12 +71,27 @@ export class Gear {
         // Ainsi, le sommet de la dent se trouve en x = 0
         const firstPoint = rotatePoint({ x: 0, y: this.radius }, innerAngle / 2)
         const toothApex = { x: 0, y: this.radius + this.teethHeight}
-
-        // TODO: d'abord créer le triangle, puis le faire tourner
-        for (let i = 0; i < this.teeth; i++) {
-            points.push(rotatePoint(firstPoint, -innerAngle * i))
-            points.push(rotatePoint(toothApex, -innerAngle * i))
+        if (this.flattening <= 0) {
+            // TODO: d'abord créer le triangle, puis le faire tourner
+            for (let i = 0; i < this.teeth; i++) {
+                points.push(rotatePoint(firstPoint, -innerAngle * i))
+                points.push(rotatePoint(toothApex, -innerAngle * i))
+            }
+        } else {
+            const a = { x: firstPoint.x - this.flattening, y: firstPoint.y - this.flattening }
+            const b = { x: firstPoint.x + this.flattening, y: a.y }
+            const c = { x: toothApex.x - this.flattening, y: toothApex.y + this.flattening }
+            const d = { x: toothApex.x + this.flattening, y: toothApex.y + this.flattening }
+            for (let i = 0; i < this.teeth; i++) {
+                console.log('hoa', a, b, c, d)
+                points.push(rotatePoint(a, -innerAngle * i))
+                points.push(rotatePoint(b, -innerAngle * i))
+                points.push(rotatePoint(c, -innerAngle * i))
+                points.push(rotatePoint(d, -innerAngle * i))
+                // points.push(rotatePoint(e, -innerAngle * i))
+            }
         }
+
 
         points.push(points[0])
 
