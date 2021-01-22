@@ -52,7 +52,7 @@ export class Gear {
     }
 
     /*
-        A tooth looks like this: (a-b doit être tangente à un cercle inscrit)
+        A tooth looks like this: TODO: (a-b doit être tangente à un cercle inscrit, pas horizontal)
               c ___ d                                                          /\
                /   \        Flattening c'est ce qui décrit la zone plate      /  \
               /     \       en comparaison avec le triangle suivant :        /    \
@@ -72,7 +72,6 @@ export class Gear {
         const firstPoint = rotatePoint({ x: 0, y: this.radius }, innerAngle / 2)
         const toothApex = { x: 0, y: this.radius + this.teethHeight}
         if (this.flattening <= 0) {
-            // TODO: d'abord créer le triangle, puis le faire tourner
             for (let i = 0; i < this.teeth; i++) {
                 points.push(rotatePoint(firstPoint, -innerAngle * i))
                 points.push(rotatePoint(toothApex, -innerAngle * i))
@@ -88,10 +87,8 @@ export class Gear {
                 points.push(rotatePoint(b, -innerAngle * i))
                 points.push(rotatePoint(c, -innerAngle * i))
                 points.push(rotatePoint(d, -innerAngle * i))
-                // points.push(rotatePoint(e, -innerAngle * i))
             }
         }
-
 
         points.push(points[0])
 
