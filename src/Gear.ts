@@ -41,7 +41,7 @@ export class Gear {
     public borders: Borders
 
     constructor() {
-        this.teeth = 20
+        this.teeth = 40
         // Angle du sommet de la dent. La dent est un triangle isocèle
         this.teethAngle = Math.PI / 4
         this.teethHeight = 30
@@ -57,8 +57,10 @@ export class Gear {
         // C'est aussi la longueur du côté du triangle décrit précédemment
         this.radius = (edgeLength / 2) / Math.sin(innerAngle / 2)
         const points = []
+        // Pour avoir le premier côté horizontal, on fait tourner le premier point vers la gauche
+        // Ainsi, le sommet de la dent se trouve en x = 0
         const firstPoint = rotatePoint({ x: 0, y: this.radius }, innerAngle / 2)
-        const toothApex = { x: edgeLength /2 -12, y: this.radius + this.teethHeight}
+        const toothApex = { x: 0, y: this.radius + this.teethHeight}
 
         // TODO: d'abord créer le triangle, puis le faire tourner
         for (let i = 0; i < this.teeth; i++) {
@@ -67,7 +69,6 @@ export class Gear {
         }
 
         points.push(points[0])
-        console.log(points)
 
          return points.map(
             p => translatePoint(p, { x: 4 * this.radius, y: 4 * this.radius })
