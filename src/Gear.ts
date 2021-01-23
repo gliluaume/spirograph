@@ -35,6 +35,7 @@ class Borders {
 
 export class Gear {
     public radius
+    public center: IPoint
     public teeth
     public teethHeight
     public teethAngle
@@ -42,7 +43,8 @@ export class Gear {
     public flattening
 
     constructor() {
-        this.teeth = 90
+        this.teeth = 64
+        this.center = { x: 0, y: 0 }
 
         // Angle du sommet de la dent. La dent est un triangle isocèle
         this.teethAngle = Math.PI / 2
@@ -93,7 +95,8 @@ export class Gear {
 
         points.push(points[0])
 
-         return points.map(
+        this.center = translatePoint(this.center, { x: 4 * this.radius, y: 4 * this.radius })
+        return points.map(
             p => translatePoint(p, { x: 4 * this.radius, y: 4 * this.radius })
         )
     }
@@ -110,6 +113,13 @@ export class Gear {
 
     // PB: centrer la roue (le centre de la roue doit être fonction de sa taille)
     public svg(): SVGElement {
+        // TODO cleanly implement colors
+        // Fill https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Gradients
+        const goldDarker = '#513d12';
+        const goldDark = '#b38728';
+        const goldMedium = '#bf953f';
+        const goldLight = '#fcf6ba';
+
         const points = this.calc()
         const path = this.pointsToPath(points)
 
@@ -119,14 +129,34 @@ export class Gear {
         s.setAttribute('style', this.borders.asStyle())
 
         const p = document.createElementNS(ns, 'path')
-        // Fill https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Gradients
-        // p.setAttribute('fill', '#fdd')
-        p.setAttribute('fill', 'none')
-        p.setAttribute('stroke', 'red')
+
+        p.setAttribute('fill', goldMedium)
+        p.setAttribute('stroke', goldMedium )
         p.setAttribute('stroke-width', '1px')
         p.setAttribute('d', path)
 
+        const largeCircle = document.createElementNS(ns, 'circle')
+        largeCircle.setAttribute('cx', this.center.x.toString())
+        largeCircle.setAttribute('cy', this.center.y.toString())
+        largeCircle.setAttribute('r', (this.radius - 6).toString())
+        largeCircle.setAttribute('fill', goldDarker)
+
+        const smallCircle = document.createElementNS(ns, 'circle')
+        smallCircle.setAttribute('cx', this.center.x.toString())
+        smallCircle.setAttribute('cy', this.center.y.toString())
+        smallCircle.setAttribute('r', (this.radius * 0.3 - 6).toString())
+        smallCircle.setAttribute('fill', goldMedium)
+
+        const axis = document.createElementNS(ns, 'circle')
+        axis.setAttribute('cx', this.center.x.toString())
+        axis.setAttribute('cy', this.center.y.toString())
+        axis.setAttribute('r', '6')
+        axis.setAttribute('fill', 'white')
+
         s.appendChild(p)
+        s.appendChild(largeCircle)
+        s.appendChild(smallCircle)
+        s.appendChild(axis)
         return s
     }
 }
