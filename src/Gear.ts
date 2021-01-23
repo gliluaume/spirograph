@@ -42,7 +42,7 @@ export class Gear {
     public flattening
 
     constructor() {
-        this.teeth = 80
+        this.teeth = 90
 
         // Angle du sommet de la dent. La dent est un triangle isocèle
         this.teethAngle = Math.PI / 2
@@ -53,10 +53,11 @@ export class Gear {
 
     /*
         A tooth looks like this: TODO: (a-b doit être tangente à un cercle inscrit, pas horizontal)
-              c ___ d                                                          /\
+              b ___ c                                                          /\
                /   \        Flattening c'est ce qui décrit la zone plate      /  \
-              /     \       en comparaison avec le triangle suivant :        /    \
-       a ____/ b     \ a2                                                   /      \
+              /     \ d     en comparaison avec le triangle suivant :        /    \
+         ____/ a     \____                                                  /      \
+                                                                           /        \
     */
     public calc(): IPoint[] {
         // on calcule un polygone régulier dont le nombre de côtés est this.teeth et la longueur du côté est edgeLength
@@ -77,12 +78,12 @@ export class Gear {
                 points.push(rotatePoint(toothApex, -innerAngle * i))
             }
         } else {
-            const a = { x: firstPoint.x - this.flattening, y: firstPoint.y - this.flattening }
-            const b = { x: firstPoint.x + this.flattening, y: a.y }
-            const c = { x: toothApex.x - this.flattening, y: toothApex.y + this.flattening }
-            const d = { x: toothApex.x + this.flattening, y: toothApex.y + this.flattening }
+            const a = { x: firstPoint.x + this.flattening, y: firstPoint.y - this.flattening }
+            const b = { x: toothApex.x - this.flattening, y: toothApex.y + this.flattening }
+            const c = { x: toothApex.x + this.flattening, y: toothApex.y + this.flattening }
+            let d = rotatePoint(firstPoint, -innerAngle)
+            d = { x: d.x - this.flattening, y: d.y - this.flattening,}
             for (let i = 0; i < this.teeth; i++) {
-                console.log('hoa', a, b, c, d)
                 points.push(rotatePoint(a, -innerAngle * i))
                 points.push(rotatePoint(b, -innerAngle * i))
                 points.push(rotatePoint(c, -innerAngle * i))
@@ -98,22 +99,6 @@ export class Gear {
     }
 
     private pointsToPath(points: IPoint[]): string {
-        return this.pointsToPathLinear(points)
-    }
-
-    // private pointsToPathBezier(points: IPoint[]): string {
-    //     this.borders = new Borders(points)
-
-    //     let path = `M ${points[0].x},${points[0].y}`
-    //     for(let i = 0; i < points.length - 1; i = i + 2) {
-    //         path = path + ` S ${points[i].x},${points[i].y} ${points[i+1].x},${points[i+1].y}`
-    //     }
-    //     const max = points.length - 1
-    //     path = path + ` S ${points[max].x},${points[max].y} ${points[0].x},${points[0].y}`
-    //     return path
-    // }
-
-    private pointsToPathLinear(points: IPoint[]): string {
         this.borders = new Borders(points)
         return points.map(
             (point, index) => {
@@ -134,6 +119,8 @@ export class Gear {
         s.setAttribute('style', this.borders.asStyle())
 
         const p = document.createElementNS(ns, 'path')
+        // Fill https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Gradients
+        // p.setAttribute('fill', '#fdd')
         p.setAttribute('fill', 'none')
         p.setAttribute('stroke', 'red')
         p.setAttribute('stroke-width', '1px')
