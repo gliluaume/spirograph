@@ -43,7 +43,7 @@ export class Gear {
     public flattening
 
     constructor() {
-        this.teeth = 64
+        this.teeth = 48
         this.center = { x: 0, y: 0 }
 
         // Angle du sommet de la dent. La dent est un triangle isocèle
@@ -81,8 +81,8 @@ export class Gear {
             }
         } else {
             const a = { x: firstPoint.x + this.flattening, y: firstPoint.y - this.flattening }
-            const b = { x: toothApex.x - this.flattening, y: toothApex.y + this.flattening }
-            const c = { x: toothApex.x + this.flattening, y: toothApex.y + this.flattening }
+            const b = { x: toothApex.x - this.flattening/2, y: toothApex.y + this.flattening }
+            const c = { x: toothApex.x + this.flattening/2, y: toothApex.y + this.flattening }
             let d = rotatePoint(firstPoint, -innerAngle)
             d = { x: d.x - this.flattening, y: d.y - this.flattening,}
             for (let i = 0; i < this.teeth; i++) {
