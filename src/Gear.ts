@@ -7,7 +7,7 @@ class Borders {
     public maxY: number
     public minY: number
 
-    constructor(points: IPoint[], padding = 5) {
+    constructor(points: IPoint[], padding = 0) {
         this.padding = padding
         this.maxX = this.max(points, p => p.x)
         this.minX = this.min(points, p => p.x)
@@ -17,7 +17,14 @@ class Borders {
 
     public asString(): string {
         return `${this.minX - this.padding} ${this.minY - this.padding}` + ' ' +
-            `${this.maxX + this.padding} ${this.maxY + this.padding}`
+            `${this.maxX - this.minX + this.padding} ${this.maxY - this.minY + this.padding}`
+    }
+
+    public get center(): IPoint {
+        return {
+            x: (this.minX + this.maxX) / 2,
+            y: (this.minY + this.maxY) / 2,
+        }
     }
 
     public asStyle(): string {
@@ -40,17 +47,17 @@ export class Gear {
     public teethHeight
     public teethAngle
     public borders: Borders
-    public flattening
+    public flatteningRate
 
     constructor() {
-        this.teeth = 48
-        this.center = { x: 0, y: 0 }
+        this.teeth = 64
+        // this.center = { x: 0, y: 0 }
 
         // Angle du sommet de la dent. La dent est un triangle isocèle
         this.teethAngle = Math.PI / 2
         this.teethHeight = 4
         this.radius = 0
-        this.flattening = 1
+        this.flatteningRate = 0.2 // in [0, 1]
     }
 
     /*
@@ -60,6 +67,7 @@ export class Gear {
               /     \ d     en comparaison avec le triangle suivant :        /    \
          ____/ a     \____                                                  /      \
                                                                            /        \
+        FlatteningRate est le rapport entre le flattening et la base du triangle formé par la dent
     */
     public calc(): IPoint[] {
         // on calcule un polygone régulier dont le nombre de côtés est this.teeth et la longueur du côté est edgeLength
@@ -70,21 +78,24 @@ export class Gear {
         // C'est aussi la longueur du côté du triangle décrit précédemment
         this.radius = (edgeLength / 2) / Math.sin(innerAngle / 2)
         const points = []
+
+        const flattening = this.flatteningRate * edgeLength
         // Pour avoir le premier côté horizontal, on fait tourner le premier point vers la gauche
         // Ainsi, le sommet de la dent se trouve en x = 0
         const firstPoint = rotatePoint({ x: 0, y: this.radius }, innerAngle / 2)
         const toothApex = { x: 0, y: this.radius + this.teethHeight}
-        if (this.flattening <= 0) {
+        if (flattening <= 0) {
             for (let i = 0; i < this.teeth; i++) {
                 points.push(rotatePoint(firstPoint, -innerAngle * i))
                 points.push(rotatePoint(toothApex, -innerAngle * i))
             }
         } else {
-            const a = { x: firstPoint.x + this.flattening, y: firstPoint.y - this.flattening }
-            const b = { x: toothApex.x - this.flattening/2, y: toothApex.y + this.flattening }
-            const c = { x: toothApex.x + this.flattening/2, y: toothApex.y + this.flattening }
+            const a = { x: firstPoint.x + flattening, y: firstPoint.y - flattening }
+            const b = { x: toothApex.x - flattening/2, y: toothApex.y + flattening }
+            const c = { x: toothApex.x + flattening/2, y: toothApex.y + flattening }
             let d = rotatePoint(firstPoint, -innerAngle)
-            d = { x: d.x - this.flattening, y: d.y - this.flattening,}
+            d = { x: d.x - flattening, y: d.y - flattening,}
+
             for (let i = 0; i < this.teeth; i++) {
                 points.push(rotatePoint(a, -innerAngle * i))
                 points.push(rotatePoint(b, -innerAngle * i))
@@ -95,7 +106,7 @@ export class Gear {
 
         points.push(points[0])
 
-        this.center = translatePoint(this.center, { x: 4 * this.radius, y: 4 * this.radius })
+        // this.center = translatePoint(this.center, { x: 4 * this.radius, y: 4 * this.radius })
         return points.map(
             p => translatePoint(p, { x: 4 * this.radius, y: 4 * this.radius })
         )
@@ -136,20 +147,20 @@ export class Gear {
         p.setAttribute('d', path)
 
         const largeCircle = document.createElementNS(ns, 'circle')
-        largeCircle.setAttribute('cx', this.center.x.toString())
-        largeCircle.setAttribute('cy', this.center.y.toString())
+        largeCircle.setAttribute('cx', this.borders.center.x.toString())
+        largeCircle.setAttribute('cy', this.borders.center.y.toString())
         largeCircle.setAttribute('r', (this.radius - 6).toString())
         largeCircle.setAttribute('fill', goldDarker)
 
         const smallCircle = document.createElementNS(ns, 'circle')
-        smallCircle.setAttribute('cx', this.center.x.toString())
-        smallCircle.setAttribute('cy', this.center.y.toString())
+        smallCircle.setAttribute('cx', this.borders.center.x.toString())
+        smallCircle.setAttribute('cy', this.borders.center.y.toString())
         smallCircle.setAttribute('r', (this.radius * 0.3 - 6).toString())
         smallCircle.setAttribute('fill', goldMedium)
 
         const axis = document.createElementNS(ns, 'circle')
-        axis.setAttribute('cx', this.center.x.toString())
-        axis.setAttribute('cy', this.center.y.toString())
+        axis.setAttribute('cx', this.borders.center.x.toString())
+        axis.setAttribute('cy', this.borders.center.y.toString())
         axis.setAttribute('r', '6')
         axis.setAttribute('fill', 'white')
 
