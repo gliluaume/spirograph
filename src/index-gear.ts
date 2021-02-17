@@ -25,4 +25,5 @@ document.querySelector("#flatteningRate").addEventListener("change", (e) => {
 function render() {
   document.querySelector("#container").innerHTML = "";
   document.querySelector("#container").appendChild(gear.svg());
+  document.querySelector("#radius").innerHTML = '' + gear.radius;
 }
