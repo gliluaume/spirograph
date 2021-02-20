@@ -10,6 +10,12 @@ document.querySelector("#teeth").addEventListener("change", (e) => {
   render();
 });
 
+document.querySelector("#teethHeight").value = gear.teethHeight;
+document.querySelector("#teethHeight").addEventListener("change", (e) => {
+  gear.teethHeight = e.target.value;
+  render();
+});
+
 document.querySelector("#teethAngle").value = gear.teethAngle;
 document.querySelector("#teethAngle").addEventListener("change", (e) => {
   gear.teethAngle = e.target.value;

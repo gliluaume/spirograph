@@ -132,6 +132,7 @@ export class Gear {
         const goldLight = '#fcf6ba';
 
         const points = this.calc()
+        console.log(points)
         const path = this.pointsToPath(points)
 
         const ns = 'http://www.w3.org/2000/svg'
