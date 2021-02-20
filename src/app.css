@@ -6,6 +6,7 @@ canvas {
   cursor: crosshair;
   position: absolute;
 }
+
 form {
   display: grid;
 }
@@ -13,6 +14,48 @@ form {
   display: inline-block;
   vertical-align: top;
 }
-input, button {
+/* input, button {
   height: 3em;
+} */
+
+#container {
+  padding-right: 2em;
+  z-index: -100;
+}
+
+#fixed {
+  xbackground-color: rgb(235, 230, 217);
+  background-color: white;
+  border: 1px solid;
+  border-radius: 0.2em;
+  border-color: var(--gold-dark);
+}
+
+.other,
+.gear-small,
+.gear-medium
+.gear-large {
+  display: inline-block;
+  height: 6em;
+  width: 6em;
+  background-repeat: no-repeat;
+  color: #34270b;
+  background-position: center bottom;
+  background-size: 2.3em;
+}
+
+.other {
+  background-image: url("/images/switch-off.svg");
+}
+
+.gear-small {
+  background-image: url("/images/gear-teeth-32.svg");
+}
+
+.gear-medium {
+  background-image: url("/images/gear-teeth-64.svg");
+}
+
+.gear-large {
+  background-image: url("/images/gear-teeth-96.svg");
 }
