@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@types/lodash": "^4.14.165",
-    "art-deco": "file:../art-deco",
+    "art-deco": "^1.0.0",
     "images": "^3.2.3",
     "lodash": "^4.17.20"
   }

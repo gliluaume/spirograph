@@ -1,9 +1,6 @@
 import { IWindowWithSpirograph, Spirograph } from "./Spirograph";
 import { get, set } from 'lodash'
-import 'art-deco/style.css'
-import 'art-deco/slider.css'
-import 'art-deco/dropdown.css'
-import 'art-deco/roller.js'
+
 interface ISpiroWin extends IWindowWithSpirograph {
     setRadius: (r: number) => void,
     radiusPreselect: RadiusPreSizes
