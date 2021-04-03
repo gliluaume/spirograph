@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es2020",
+        "noImplicitAny": true,
+        "moduleResolution": "node",
+        "outDir": "dist",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "noUnusedLocals": true,
+        "rootDir": ".",
+        "inlineSourceMap": true,
+    },
+    "exclude": [
+        "test/e2e"
+    ]
+}
